@@ -129,6 +129,9 @@ import gRPC from '@nsnanocat/grpc';
           rawBody = gRPC.decode(rawBody);
           // 解析链接并处理 protobuf 数据
           // Parse link and process protobuf data
+          // 示例：解析路径（需要先定义）
+          // Example: Parse paths (need to be defined first)
+          // const PATHs = url.pathname.split("/").filter(Boolean);
           // 主机判断
           // Host detection
           //switch (url.hostname) {
