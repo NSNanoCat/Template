@@ -140,8 +140,8 @@ import gRPC from '@nsnanocat/grpc';
   
   // 重要：添加您的逻辑时，请取消注释下面的 return 语句
   // IMPORTANT: Uncomment the return statement below when you add your logic
-  // 返回修改后的响应数据（如果有）
-  // Return the modified response data (if any)
+  // 返回修改后的响应数据（如果有）或由 finally 块处理
+  // Return the modified response data (if any) or let the finally block handle it
   // return $response;
 })()
   .catch(e => Console.error(e))
