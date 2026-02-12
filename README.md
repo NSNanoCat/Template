@@ -30,13 +30,19 @@ Write your business logic in `src/request.js` and `src/response.js`. The templat
 
 ### 4. 构建 / Build
 
+**生产构建（压缩，用于实际部署）：**
 ```bash
 npm run build
 ```
 
-构建后的文件将输出到 `dist/` 目录。
+**调试构建（未压缩，便于调试）：**
+```bash
+npm run build:debug
+```
 
-The built files will be output to the `dist/` directory.
+构建后的文件将输出到 `js/` 目录。
+
+The built files will be output to the `js/` directory.
 
 ## 📁 项目结构 / Project Structure
 
@@ -45,9 +51,15 @@ Template/
 ├── src/
 │   ├── request.js    # 请求处理脚本模板 / Request handler script template
 │   └── response.js   # 响应处理脚本模板 / Response handler script template
-├── dist/             # 构建输出目录 / Build output directory
+├── js/               # 构建输出目录 / Build output directory
+│   ├── request.js    # 生产构建（压缩） / Production build (minified)
+│   ├── response.js   # 生产构建（压缩） / Production build (minified)
+│   ├── request.debug.js  # 调试构建 / Debug build
+│   └── response.debug.js # 调试构建 / Debug build
 ├── package.json      # 项目配置和依赖 / Project configuration and dependencies
-├── rollup.config.js  # Rollup 构建配置 / Rollup build configuration
+├── rollup.config.js  # Rollup 主配置 / Rollup main configuration
+├── rollup.default.config.js  # 生产构建配置 / Production build configuration
+├── rollup.debug.config.js    # 调试构建配置 / Debug build configuration
 └── README.md         # 项目说明 / Project documentation
 ```
 
@@ -93,7 +105,8 @@ Template/
 
 ## 🔧 NPM 脚本 / NPM Scripts
 
-- `npm run build` - 构建项目 / Build the project
+- `npm run build` - 构建生产版本（压缩） / Build production version (minified)
+- `npm run build:debug` - 构建调试版本（未压缩，保留注释） / Build debug version (uncompressed, preserves comments)
 - `npm run build:watch` - 监听模式构建 / Build in watch mode
 
 ## 📚 参考 / References

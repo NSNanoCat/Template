@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "rollup -c",
+    "build:debug": "rollup --config --configDebug",
     "build:watch": "rollup -c -w"
   },
   "keywords": [
@@ -23,6 +24,7 @@
   "devDependencies": {
     "rollup": "^4.0.0",
     "@rollup/plugin-commonjs": "^25.0.0",
-    "@rollup/plugin-node-resolve": "^15.0.0"
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-terser": "^0.4.0"
   }
 }
