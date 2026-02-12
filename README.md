@@ -91,6 +91,7 @@ The template files now include a complete `switch (FORMAT)` logic structure that
   // Initialize utilities and detect format
   const $ = new util.ENV($request);
   const Console = util.Console;
+  const $app = $.name;
   
   // Detect FORMAT based on Content-Type
   const FORMAT = $request.headers?.['Content-Type']?.includes('protobuf') ? 'protobuf' : 'json';
@@ -121,6 +122,7 @@ The template files now include a complete `switch (FORMAT)` logic structure that
   // Initialize utilities and detect format
   const $ = new util.ENV($request);
   const Console = util.Console;
+  const $app = $.name;
   
   // Detect FORMAT from Content-Type header
   const contentType = $response.headers?.['Content-Type'] || '';
