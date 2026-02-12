@@ -158,11 +158,6 @@ import gRPC from '@nsnanocat/grpc';
       //$response.body = JSON.stringify(body);
       break;
       
-      // 或者直接返回解密后的 JSON（更常见）
-      // Or directly return decrypted JSON (more common)
-      //$response.body = JSON.stringify(body);
-      break;
-      
     case "application/protobuf":
     case "application/x-protobuf":
     case "application/vnd.google.protobuf": {
