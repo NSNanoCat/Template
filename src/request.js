@@ -217,6 +217,7 @@ import gRPC from '@nsnanocat/grpc';
         break;
       default:
         Console.error(`不合法的 $response 类型: ${typeof $response}`);
+        done();
         break;
     }
   });
