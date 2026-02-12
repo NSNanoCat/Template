@@ -70,6 +70,36 @@ Template/
 - [@nsnanocat/grpc](https://www.npmjs.com/package/@nsnanocat/grpc) - gRPC 客户端库 / gRPC client library
 - [Rollup](https://www.rollupjs.com) - 模块打包工具 / Module bundler
 
+### 可用的导入模块 / Available Imports
+
+**@nsnanocat/util** (使用命名导入 / Use named imports):
+```javascript
+import { 
+  $app,          // 当前应用检测 / Current app detection
+  Console,       // 日志工具类 / Logging utility class
+  Lodash,        // Lodash 工具方法 / Lodash utility methods
+  done,          // 完成脚本执行 / Complete script execution
+  notification,  // 系统通知 / System notification
+  time,          // 时间格式化 / Time formatting
+  wait,          // Promise延迟 / Promise-based delay
+  getStorage,    // 存储管理 / Storage management
+  fetch,         // Fetch polyfill
+  Storage,       // Storage polyfill
+  StatusTexts    // HTTP状态文本映射 / HTTP status text mapping
+} from '@nsnanocat/util';
+```
+
+**@nsnanocat/url** (使用命名导入 / Use named imports):
+```javascript
+import { URL, URLSearchParams } from '@nsnanocat/url';
+```
+
+**@nsnanocat/grpc** (使用默认导入 / Use default import):
+```javascript
+import gRPC from '@nsnanocat/grpc';
+// 使用 gRPC.decode() 和 gRPC.encode() / Use gRPC.decode() and gRPC.encode()
+```
+
 ## ✏️ 编写脚本 / Writing Scripts
 
 模板文件已包含完整的 `switch (FORMAT)` 逻辑结构，支持多种数据格式处理。
@@ -88,10 +118,12 @@ The template files now include a complete `switch (FORMAT)` logic structure that
 
 ```javascript
 !(async () => {
-  // Initialize utilities and detect format
-  const $ = new util.ENV($request);
-  const Console = util.Console;
-  const $app = $.name;
+  // Import utilities using named exports
+  // import { $app, Console } from '@nsnanocat/util';
+  // import gRPC from '@nsnanocat/grpc';
+  
+  // Detect current app environment
+  Console.debug(`Current App: ${$app}`);
   
   // Detect FORMAT based on Content-Type
   const FORMAT = $request.headers?.['Content-Type']?.includes('protobuf') ? 'protobuf' : 'json';
@@ -107,7 +139,8 @@ The template files now include a complete `switch (FORMAT)` logic structure that
     case 'protobuf':
       // Handle protobuf format
       let rawBody = ($app === "Quantumult X") ? new Uint8Array($request.bodyBytes ?? []) : $request.body ?? new Uint8Array();
-      // Process protobuf data using @nsnanocat/grpc
+      // Process protobuf data using gRPC.decode()
+      const decodedBody = gRPC.decode(rawBody);
       break;
   }
   
@@ -119,10 +152,12 @@ The template files now include a complete `switch (FORMAT)` logic structure that
 
 ```javascript
 !(async () => {
-  // Initialize utilities and detect format
-  const $ = new util.ENV($request);
-  const Console = util.Console;
-  const $app = $.name;
+  // Import utilities using named exports
+  // import { $app, Console } from '@nsnanocat/util';
+  // import gRPC from '@nsnanocat/grpc';
+  
+  // Detect current app environment
+  Console.debug(`Current App: ${$app}`);
   
   // Detect FORMAT from Content-Type header
   const contentType = $response.headers?.['Content-Type'] || '';
@@ -139,7 +174,10 @@ The template files now include a complete `switch (FORMAT)` logic structure that
     case 'protobuf':
       // Handle binary protobuf data
       let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
-      Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
+      const decodedBody = gRPC.decode(rawBody);
+      Console.debug(`Decoded protobuf body`);
+      // Process and encode back
+      // rawBody = gRPC.encode(modifiedBody);
       $response.body = rawBody;
       break;
   }

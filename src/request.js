@@ -1,7 +1,7 @@
 // Import dependencies
-import * as util from '@nsnanocat/util';
+import { $app, Console, Lodash, done, notification, time, wait, getStorage, fetch, Storage, StatusTexts } from '@nsnanocat/util';
 import { URL, URLSearchParams } from '@nsnanocat/url';
-import * as grpc from '@nsnanocat/grpc';
+import gRPC from '@nsnanocat/grpc';
 
 // Request Script Template
 // This script is executed before sending a request
@@ -17,15 +17,11 @@ import * as grpc from '@nsnanocat/grpc';
   // ============================================
   // Format Detection and Initialization
   // ============================================
-  const $ = new util.ENV($request);
-  const Console = util.Console;
+  // Detect current app environment  
+  Console.debug(`Current App: ${$app}`);
   
   Console.log(`\n🚀 ========== Request Start ==========`);
   Console.debug(`$request: ${JSON.stringify($request)}`);
-  
-  // Detect current app environment
-  const $app = $.name;
-  Console.debug(`Current App: ${$app}`);
   
   // Parse URL for processing
   const url = new URL($request.url);
@@ -56,7 +52,8 @@ import * as grpc from '@nsnanocat/grpc';
       // Example: Handle binary protobuf data
       // let rawBody = ($app === "Quantumult X") ? new Uint8Array($request.bodyBytes ?? []) : $request.body ?? new Uint8Array();
       // Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
-      // Process protobuf data here using @nsnanocat/grpc
+      // Process protobuf data here using gRPC.decode()
+      // const decodedBody = gRPC.decode(rawBody);
       // $request.body = rawBody;
       break;
       

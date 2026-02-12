@@ -1,7 +1,7 @@
 // Import dependencies
-import * as util from '@nsnanocat/util';
+import { $app, Console, Lodash, done, notification, time, wait, getStorage, fetch, Storage, StatusTexts } from '@nsnanocat/util';
 import { URL, URLSearchParams } from '@nsnanocat/url';
-import * as grpc from '@nsnanocat/grpc';
+import gRPC from '@nsnanocat/grpc';
 
 // Response Script Template
 // This script is executed after receiving a response
@@ -17,16 +17,12 @@ import * as grpc from '@nsnanocat/grpc';
   // ============================================
   // Format Detection and Initialization
   // ============================================
-  const $ = new util.ENV($request);
-  const Console = util.Console;
+  // Detect current app environment
+  Console.debug(`Current App: ${$app}`);
   
   Console.log(`\n🚀 ========== Response Start ==========`);
   Console.debug(`$response.statusCode: ${$response.statusCode}`);
   Console.debug(`$response.headers: ${JSON.stringify($response.headers)}`);
-  
-  // Detect current app environment
-  const $app = $.name;
-  Console.debug(`Current App: ${$app}`);
   
   // ============================================
   // Format-based Response Processing
@@ -71,10 +67,10 @@ import * as grpc from '@nsnanocat/grpc';
       // let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
       // Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
       // 
-      // // Process protobuf data using @nsnanocat/grpc
-      // // const message = grpc.decode(rawBody);
-      // // const modifiedMessage = processMessage(message);
-      // // rawBody = grpc.encode(modifiedMessage);
+      // // Process protobuf data using gRPC.decode()
+      // const decodedBody = gRPC.decode(rawBody);
+      // // const modifiedMessage = processMessage(decodedBody);
+      // // rawBody = gRPC.encode(modifiedMessage);
       // 
       // // Write binary data back
       // Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
