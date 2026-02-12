@@ -1,0 +1,29 @@
+{
+  "name": "@nsnanocat/template",
+  "version": "1.0.0",
+  "description": "开箱即用的脚本模板仓库 - Out-of-the-box script template repository",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w"
+  },
+  "keywords": [
+    "template",
+    "nsnanocat",
+    "script",
+    "rollup"
+  ],
+  "author": "NSNanoCat",
+  "license": "MIT",
+  "dependencies": {
+    "@nsnanocat/util": "^1.0.0",
+    "@nsnanocat/url": "^1.0.0",
+    "@nsnanocat/grpc": "^1.0.0"
+  },
+  "devDependencies": {
+    "rollup": "^4.0.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0"
+  }
+}
