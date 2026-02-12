@@ -141,6 +141,9 @@ The template files now include a complete `switch (FORMAT)` logic structure that
       let rawBody = ($app === "Quantumult X") ? new Uint8Array($request.bodyBytes ?? []) : $request.body ?? new Uint8Array();
       // Process protobuf data using gRPC.decode()
       const decodedBody = gRPC.decode(rawBody);
+      // Modify the decoded data as needed
+      // const encodedBody = gRPC.encode(modifiedData);
+      // $request.body = encodedBody;
       break;
   }
   
@@ -176,9 +179,11 @@ The template files now include a complete `switch (FORMAT)` logic structure that
       let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
       const decodedBody = gRPC.decode(rawBody);
       Console.debug(`Decoded protobuf body`);
-      // Process and encode back
-      // rawBody = gRPC.encode(modifiedBody);
-      $response.body = rawBody;
+      // Process the decoded data
+      // const modifiedBody = processData(decodedBody);
+      // Encode back and update response
+      // const encodedBody = gRPC.encode(modifiedBody);
+      // $response.body = encodedBody;
       break;
   }
   
