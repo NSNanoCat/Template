@@ -133,8 +133,12 @@ import gRPC from '@nsnanocat/grpc';
       //body = JSON.parse(decryptedText);
       //Console.debug(`Decrypted body: ${JSON.stringify(body)}`);
       
-      // 方法 2: AES-ECB 模式解密（无 IV）
-      // Method 2: AES-ECB mode decryption (without IV)
+      // 方法 2: AES-ECB 模式解密（无 IV，不推荐用于生产环境）
+      // Method 2: AES-ECB mode decryption (without IV, NOT recommended for production)
+      // 警告：ECB 模式不安全，相同明文产生相同密文，容易被模式分析攻击
+      // Warning: ECB mode is insecure, identical plaintext produces identical ciphertext, vulnerable to pattern analysis
+      // 仅在必须兼容旧系统时使用，优先使用 CBC/GCM 模式
+      // Only use when must maintain compatibility with legacy systems, prefer CBC/GCM modes
       //const encryptedData = $response.body; // 假设响应体是加密字符串 / Assume response body is encrypted string
       //const secretKey = "your-secret-key"; // 密钥 / Secret key
       //const decrypted = CryptoJS.AES.decrypt(encryptedData, CryptoJS.enc.Utf8.parse(secretKey), {
