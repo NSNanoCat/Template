@@ -114,10 +114,30 @@ import gRPC from '@nsnanocat/grpc';
     case "application/protobuf":
     case "application/x-protobuf":
     case "application/vnd.google.protobuf":
+      Console.log(`📦 Processing Protobuf format`);
+      //Console.debug(`$response.body: ${JSON.stringify($response.body)}`);
+      //let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
+      //Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
+      // 写入二进制数据
+      // Write binary data
+      //Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
+      //$response.body = rawBody;
+      break;
+      
     case "application/grpc":
     case "application/grpc+proto":
+      Console.log(`📦 Processing gRPC format`);
+      //Console.debug(`$response.body: ${JSON.stringify($response.body)}`);
+      //let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
+      //Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
+      // 写入二进制数据
+      // Write binary data
+      //Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
+      //$response.body = rawBody;
+      break;
+      
     case "application/octet-stream":
-      Console.log(`📦 Processing Protobuf/gRPC format`);
+      Console.log(`📦 Processing octet-stream format`);
       //Console.debug(`$response.body: ${JSON.stringify($response.body)}`);
       //let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
       //Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
@@ -152,4 +172,6 @@ import gRPC from '@nsnanocat/grpc';
   // 返回修改后的响应
   // Return the modified response
   // return $response;
-})();
+})()
+  .catch(e => Console.error(e))
+  .finally(() => done($response));

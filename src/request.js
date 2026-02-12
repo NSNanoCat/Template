@@ -132,14 +132,46 @@ import gRPC from '@nsnanocat/grpc';
   // 示例：修改 URL 参数
   // Example: Modify URL parameters
   // url.searchParams.set('key', 'value');
-  // $request.url = url.toString();
+  $request.url = url.toString();
+  Console.debug(`$request.url: ${$request.url}`);
   
   Console.log(`🏁 ========== Request End ==========\n`);
   Console.debug(`Modified $request: ${JSON.stringify($request)}`);
   
   // 重要：添加您的逻辑时，请取消注释下面的 return 语句
   // IMPORTANT: Uncomment the return statement below when you add your logic
-  // 返回修改后的请求
-  // Return the modified request
-  // return $request;
-})();
+  // 返回修改后的响应数据（如果有）
+  // Return the modified response data (if any)
+  // return $response;
+})()
+  .catch(e => Console.error(e))
+  .finally(() => {
+    switch (typeof $response) {
+      case "object": // 有构造回复数据，返回构造的回复数据
+        // Has constructed response data, return the constructed response data
+        //Console.debug("finally", `echo $response: ${JSON.stringify($response, null, 2)}`);
+        if ($response.headers?.["Content-Encoding"]) $response.headers["Content-Encoding"] = "identity";
+        if ($response.headers?.["content-encoding"]) $response.headers["content-encoding"] = "identity";
+        switch ($app) {
+          default:
+            done({ response: $response });
+            break;
+          case "Quantumult X":
+            if (!$response.status) $response.status = "HTTP/1.1 200 OK";
+            delete $response.headers?.["Content-Length"];
+            delete $response.headers?.["content-length"];
+            delete $response.headers?.["Transfer-Encoding"];
+            done($response);
+            break;
+        }
+        break;
+      case "undefined": // 无构造回复数据，发送修改的请求数据
+        // No constructed response data, send the modified request data
+        //Console.debug("finally", `$request: ${JSON.stringify($request, null, 2)}`);
+        done($request);
+        break;
+      default:
+        Console.error(`不合法的 $response 类型: ${typeof $response}`);
+        break;
+    }
+  });
