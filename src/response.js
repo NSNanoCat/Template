@@ -113,10 +113,54 @@ import gRPC from '@nsnanocat/grpc';
       Console.log(`📦 Processing JSON format`);
       //body = JSON.parse($response.body ?? "{}");
       //Console.debug(`body: ${JSON.stringify(body)}`);
-      //externalSubtitle = JSON.parse(externalSubtitle);
-      //Console.debug(`externalSubtitle: ${JSON.stringify(externalSubtitle)}`);
-      //body = Composite(body, externalSubtitle, FORMAT, URL.query?.kind, Settings.Offset, Settings.Tolerance, Settings.Position);
-      //Console.debug(`body: ${JSON.stringify(body)}`);
+      
+      // 示例：使用 CryptoJS 解密 AES 加密的响应体
+      // Example: Decrypt AES-encrypted response body using CryptoJS
+      // 场景：某些 API 返回加密的 JSON 数据，需要先解密再解析
+      // Scenario: Some APIs return encrypted JSON data that needs to be decrypted before parsing
+      
+      // 方法 1: AES-CBC 模式解密（带 IV）
+      // Method 1: AES-CBC mode decryption (with IV)
+      //const encryptedData = $response.body; // 假设响应体是加密字符串 / Assume response body is encrypted string
+      //const secretKey = "your-secret-key"; // 密钥 / Secret key
+      //const iv = "your-iv-string"; // 初始化向量 / Initialization vector
+      //const decrypted = CryptoJS.AES.decrypt(encryptedData, CryptoJS.enc.Utf8.parse(secretKey), {
+      //  iv: CryptoJS.enc.Utf8.parse(iv),
+      //  mode: CryptoJS.mode.CBC,
+      //  padding: CryptoJS.pad.Pkcs7
+      //});
+      //const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      //body = JSON.parse(decryptedText);
+      //Console.debug(`Decrypted body: ${JSON.stringify(body)}`);
+      
+      // 方法 2: AES-ECB 模式解密（无 IV）
+      // Method 2: AES-ECB mode decryption (without IV)
+      //const encryptedData = $response.body; // 假设响应体是加密字符串 / Assume response body is encrypted string
+      //const secretKey = "your-secret-key"; // 密钥 / Secret key
+      //const decrypted = CryptoJS.AES.decrypt(encryptedData, CryptoJS.enc.Utf8.parse(secretKey), {
+      //  mode: CryptoJS.mode.ECB,
+      //  padding: CryptoJS.pad.Pkcs7
+      //});
+      //const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      //body = JSON.parse(decryptedText);
+      //Console.debug(`Decrypted body: ${JSON.stringify(body)}`);
+      
+      // 处理解密后的 JSON 数据
+      // Process decrypted JSON data
+      //body.customField = "customValue";
+      //Console.debug(`Modified body: ${JSON.stringify(body)}`);
+      
+      // 如果需要加密回去（可选）
+      // If need to encrypt back (optional)
+      //const encryptedResponse = CryptoJS.AES.encrypt(JSON.stringify(body), CryptoJS.enc.Utf8.parse(secretKey), {
+      //  iv: CryptoJS.enc.Utf8.parse(iv),
+      //  mode: CryptoJS.mode.CBC,
+      //  padding: CryptoJS.pad.Pkcs7
+      //}).toString();
+      //$response.body = encryptedResponse;
+      
+      // 或者直接返回解密后的 JSON（更常见）
+      // Or directly return decrypted JSON (more common)
       //$response.body = JSON.stringify(body);
       break;
       
