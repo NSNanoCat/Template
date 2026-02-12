@@ -31,39 +31,77 @@ import gRPC from '@nsnanocat/grpc';
   // ============================================
   // Format-based Request Processing
   // ============================================
-  // Detect or set FORMAT (e.g., 'json', 'protobuf', 'xml')
-  const FORMAT = $request.headers?.['Content-Type']?.includes('protobuf') ? 'protobuf' : 'json';
+  // Get Content-Type and extract the main MIME type
+  const contentType = $request.headers?.['Content-Type'] || $request.headers?.['content-type'] || '';
+  // Extract FORMAT from Content-Type (remove charset and other parameters)
+  const FORMAT = contentType.split(';')[0].trim();
+  
+  Console.debug(`Content-Type: ${contentType}`);
   Console.debug(`Detected FORMAT: ${FORMAT}`);
   
+  // 格式判断
   switch (FORMAT) {
-    case 'json':
-      Console.log(`📦 Processing JSON format request`);
-      // Example: Parse and modify JSON body
-      // if ($request.body) {
-      //   let body = JSON.parse($request.body);
-      //   body.customField = 'customValue';
-      //   $request.body = JSON.stringify(body);
-      // }
+    case undefined: // 视为无body
+      Console.log(`📦 No body (undefined)`);
       break;
       
-    case 'protobuf':
-    case 'x-protobuf':
-      Console.log(`📦 Processing Protobuf format request`);
-      // Example: Handle binary protobuf data
-      // let rawBody = ($app === "Quantumult X") ? new Uint8Array($request.bodyBytes ?? []) : $request.body ?? new Uint8Array();
-      // Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
-      // Process protobuf data here using gRPC.decode()
-      // const decodedBody = gRPC.decode(rawBody);
-      // $request.body = rawBody;
-      break;
-      
-    case 'xml':
-      Console.log(`📦 Processing XML format request`);
-      // Handle XML format requests
-      break;
-      
+    case "application/x-www-form-urlencoded":
+    case "text/plain":
     default:
-      Console.log(`📦 Processing default format request`);
+      Console.log(`📦 Processing plain text or default format`);
+      break;
+      
+    case "application/x-mpegURL":
+    case "application/x-mpegurl":
+    case "application/vnd.apple.mpegurl":
+    case "audio/mpegurl":
+      Console.log(`📦 Processing M3U8 format`);
+      //body = M3U8.parse($request.body);
+      //Console.debug(`body: ${JSON.stringify(body)}`);
+      //$request.body = M3U8.stringify(body);
+      break;
+      
+    case "text/xml":
+    case "text/html":
+    case "text/plist":
+    case "application/xml":
+    case "application/plist":
+    case "application/x-plist":
+      Console.log(`📦 Processing XML/HTML/Plist format`);
+      //body = XML.parse($request.body);
+      //Console.debug(`body: ${JSON.stringify(body)}`);
+      //$request.body = XML.stringify(body);
+      break;
+      
+    case "text/vtt":
+    case "application/vtt":
+      Console.log(`📦 Processing VTT format`);
+      //body = VTT.parse($request.body);
+      //Console.debug(`body: ${JSON.stringify(body)}`);
+      //$request.body = VTT.stringify(body);
+      break;
+      
+    case "text/json":
+    case "application/json":
+      Console.log(`📦 Processing JSON format`);
+      //body = JSON.parse($request.body ?? "{}");
+      //Console.debug(`body: ${JSON.stringify(body)}`);
+      //$request.body = JSON.stringify(body);
+      break;
+      
+    case "application/protobuf":
+    case "application/x-protobuf":
+    case "application/vnd.google.protobuf":
+    case "application/grpc":
+    case "application/grpc+proto":
+    case "application/octet-stream":
+      Console.log(`📦 Processing Protobuf/gRPC format`);
+      //Console.debug(`$request.body: ${JSON.stringify($request.body)}`);
+      //let rawBody = ($app === "Quantumult X") ? new Uint8Array($request.bodyBytes ?? []) : $request.body ?? new Uint8Array();
+      //Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
+      // 写入二进制数据
+      //Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
+      //$request.body = rawBody;
       break;
   }
   

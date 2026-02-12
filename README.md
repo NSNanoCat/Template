@@ -108,11 +108,43 @@ The template files now include a complete `switch (FORMAT)` logic structure that
 
 ### 主要特性 / Key Features
 
-- **自动格式检测** / Automatic format detection (JSON, Protobuf, XML)
+- **精确格式检测** / Precise format detection based on exact Content-Type MIME types
+- **支持多种格式** / Supports multiple formats:
+  - M3U8 (application/x-mpegURL, application/vnd.apple.mpegurl, audio/mpegurl)
+  - XML/HTML/Plist (text/xml, text/html, application/xml, application/plist)
+  - VTT (text/vtt, application/vtt)
+  - JSON (text/json, application/json)
+  - Protobuf/gRPC (application/protobuf, application/x-protobuf, application/grpc, application/octet-stream)
+  - Plain text and form-urlencoded
 - **Console.debug 日志** / Console.debug logging for debugging
 - **多应用支持** / Multi-app support (Quantumult X, Surge, Loon, etc.)
 - **二进制数据处理** / Binary data handling (bodyBytes, rawBody)
-- **环境检测** / Environment detection using util.ENV
+- **环境检测** / Environment detection using $app
+
+### FORMAT 检测方式 / FORMAT Detection
+
+模板使用精确的 Content-Type 匹配，而不是简单的字符串包含检测：
+
+The template uses exact Content-Type matching instead of simple string inclusion:
+
+```javascript
+// Extract FORMAT from Content-Type (remove charset and other parameters)
+const contentType = $response.headers?.['Content-Type'] || $response.headers?.['content-type'] || '';
+const FORMAT = contentType.split(';')[0].trim();
+
+// 格式判断 - Format detection
+switch (FORMAT) {
+  case "application/json":
+    // Handle JSON
+    break;
+  case "application/protobuf":
+  case "application/x-protobuf":
+  case "application/grpc":
+    // Handle protobuf/gRPC
+    break;
+  // ... more cases
+}
+```
 
 ### request.js 示例 / request.js Example
 
