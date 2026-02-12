@@ -72,17 +72,43 @@ Template/
 
 ## ✏️ 编写脚本 / Writing Scripts
 
+模板文件已包含完整的 `switch (FORMAT)` 逻辑结构，支持多种数据格式处理。
+
+The template files now include a complete `switch (FORMAT)` logic structure that supports multiple data format processing.
+
+### 主要特性 / Key Features
+
+- **自动格式检测** / Automatic format detection (JSON, Protobuf, XML)
+- **Console.debug 日志** / Console.debug logging for debugging
+- **多应用支持** / Multi-app support (Quantumult X, Surge, Loon, etc.)
+- **二进制数据处理** / Binary data handling (bodyBytes, rawBody)
+- **环境检测** / Environment detection using util.ENV
+
 ### request.js 示例 / request.js Example
 
 ```javascript
 !(async () => {
-  // 修改请求 URL / Modify request URL
-  const url = new URL($request.url);
-  url.searchParams.set('key', 'value');
-  $request.url = url.toString();
+  // Initialize utilities and detect format
+  const $ = new util.ENV($request);
+  const Console = util.Console;
   
-  // 添加或修改请求头 / Add or modify headers
-  $request.headers['Authorization'] = 'Bearer token';
+  // Detect FORMAT based on Content-Type
+  const FORMAT = $request.headers?.['Content-Type']?.includes('protobuf') ? 'protobuf' : 'json';
+  
+  switch (FORMAT) {
+    case 'json':
+      // Handle JSON format
+      let body = JSON.parse($request.body);
+      body.customField = 'customValue';
+      $request.body = JSON.stringify(body);
+      break;
+      
+    case 'protobuf':
+      // Handle protobuf format
+      let rawBody = ($app === "Quantumult X") ? new Uint8Array($request.bodyBytes ?? []) : $request.body ?? new Uint8Array();
+      // Process protobuf data using @nsnanocat/grpc
+      break;
+  }
   
   return $request;
 })();
@@ -92,12 +118,29 @@ Template/
 
 ```javascript
 !(async () => {
-  // 解析 JSON 响应 / Parse JSON response
-  const data = JSON.parse($response.body);
+  // Initialize utilities and detect format
+  const $ = new util.ENV($request);
+  const Console = util.Console;
   
-  // 修改响应数据 / Modify response data
-  data.modified = true;
-  $response.body = JSON.stringify(data);
+  // Detect FORMAT from Content-Type header
+  const contentType = $response.headers?.['Content-Type'] || '';
+  let FORMAT = contentType.includes('protobuf') ? 'protobuf' : 'json';
+  
+  switch (FORMAT) {
+    case 'json':
+      // Parse and modify JSON response
+      let body = JSON.parse($response.body);
+      body.modified = true;
+      $response.body = JSON.stringify(body);
+      break;
+      
+    case 'protobuf':
+      // Handle binary protobuf data
+      let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
+      Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
+      $response.body = rawBody;
+      break;
+  }
   
   return $response;
 })();
