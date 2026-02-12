@@ -113,39 +113,84 @@ import gRPC from '@nsnanocat/grpc';
       
     case "application/protobuf":
     case "application/x-protobuf":
-    case "application/vnd.google.protobuf":
+    case "application/vnd.google.protobuf": {
       Console.log(`📦 Processing Protobuf format`);
       //Console.debug(`$response.body: ${JSON.stringify($response.body)}`);
-      //let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
+      // 读取二进制数据
+      // Read binary data
+      let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : ($response.body ?? new Uint8Array());
       //Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
+      // 处理 protobuf 消息
+      // Process protobuf message
+      //body = ProtoMessage.fromBinary(rawBody);
+      //Console.debug(`body: ${JSON.stringify(body)}`);
+      // 修改消息内容
+      // Modify message content
+      //body.field = value;
+      //rawBody = ProtoMessage.toBinary(body);
       // 写入二进制数据
       // Write binary data
       //Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
-      //$response.body = rawBody;
+      $response.body = rawBody;
       break;
+    }
       
     case "application/grpc":
-    case "application/grpc+proto":
+    case "application/grpc+proto": {
       Console.log(`📦 Processing gRPC format`);
       //Console.debug(`$response.body: ${JSON.stringify($response.body)}`);
-      //let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
+      // 读取二进制数据
+      // Read binary data
+      let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : ($response.body ?? new Uint8Array());
       //Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
+      // 解码 gRPC 数据
+      // Decode gRPC data
+      rawBody = gRPC.decode(rawBody);
+      // 解析链接并处理 protobuf 数据
+      // Parse link and process protobuf data
+      // 主机判断
+      // Host detection
+      //switch (url.hostname) {
+      //  case "example.com":
+      //    // 路径判断
+      //    // Path detection
+      //    switch (PATHs?.[0]) {
+      //      case "service.path":
+      //        // 处理 protobuf 消息
+      //        // Process protobuf message
+      //        //body = ProtoMessage.fromBinary(rawBody);
+      //        //Console.debug(`body: ${JSON.stringify(body)}`);
+      //        // 修改消息内容
+      //        // Modify message content
+      //        //body.field = value;
+      //        //rawBody = ProtoMessage.toBinary(body);
+      //        break;
+      //    }
+      //    break;
+      //}
+      // 编码 gRPC 数据
+      // Encode gRPC data
+      rawBody = gRPC.encode(rawBody);
       // 写入二进制数据
       // Write binary data
       //Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
-      //$response.body = rawBody;
+      $response.body = rawBody;
       break;
+    }
       
-    case "application/octet-stream":
+    case "application/octet-stream": {
       Console.log(`📦 Processing octet-stream format`);
       //Console.debug(`$response.body: ${JSON.stringify($response.body)}`);
-      //let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
+      // 读取二进制数据
+      // Read binary data
+      let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : ($response.body ?? new Uint8Array());
       //Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
       // 写入二进制数据
       // Write binary data
       //Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
-      //$response.body = rawBody;
+      $response.body = rawBody;
       break;
+    }
   }
   
   // ============================================
