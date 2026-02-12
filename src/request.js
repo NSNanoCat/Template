@@ -1,38 +1,49 @@
+// 导入依赖项
 // Import dependencies
 import { $app, Console, Lodash, done, notification, time, wait, getStorage, fetch, Storage, StatusTexts } from '@nsnanocat/util';
 import { URL, URLSearchParams } from '@nsnanocat/url';
 import gRPC from '@nsnanocat/grpc';
 
+// 请求脚本模板
 // Request Script Template
+// 此脚本在发送请求之前执行
 // This script is executed before sending a request
+// 您可以修改请求、添加请求头、参数等
 // You can modify the request, add headers, parameters, etc.
 
 /**
+ * 主请求处理程序
  * Main request handler
- * @param {Object} $request - The request object
- * @param {Object} $environment - Environment variables
- * @returns {Object} Modified request object
+ * @param {Object} $request - 请求对象 / The request object
+ * @param {Object} $environment - 环境变量 / Environment variables
+ * @returns {Object} 修改后的请求对象 / Modified request object
  */
 !(async () => {
   // ============================================
+  // 格式检测和初始化
   // Format Detection and Initialization
   // ============================================
+  // 检测当前应用环境
   // Detect current app environment  
   Console.debug(`Current App: ${$app}`);
   
   Console.log(`\n🚀 ========== Request Start ==========`);
   Console.debug(`$request: ${JSON.stringify($request)}`);
   
+  // 解析 URL 以便处理
   // Parse URL for processing
   const url = new URL($request.url);
   Console.debug(`Request URL: ${url.toString()}`);
   Console.debug(`URL Params: ${JSON.stringify(Object.fromEntries(url.searchParams))}`);
   
   // ============================================
+  // 基于格式的请求处理
   // Format-based Request Processing
   // ============================================
+  // 获取 Content-Type 并提取主 MIME 类型
   // Get Content-Type and extract the main MIME type
   const contentType = $request.headers?.['Content-Type'] || $request.headers?.['content-type'] || '';
+  // 从 Content-Type 中提取 FORMAT（删除 charset 和其他参数）
   // Extract FORMAT from Content-Type (remove charset and other parameters)
   const FORMAT = contentType.split(';')[0].trim();
   
@@ -40,11 +51,13 @@ import gRPC from '@nsnanocat/grpc';
   Console.debug(`Detected FORMAT: ${FORMAT}`);
   
   // 格式判断
+  // Format detection
   switch (FORMAT) {
-    case undefined: // 视为无body
+    case undefined: // 视为无body / Treated as no body
       Console.log(`📦 No body (undefined)`);
       break;
       
+    // 这些情况有意直通到 default（相同处理）
     // These cases intentionally fall through to default (same handling)
     case "application/x-www-form-urlencoded":
     case "text/plain":
@@ -101,18 +114,22 @@ import gRPC from '@nsnanocat/grpc';
       //let rawBody = ($app === "Quantumult X") ? new Uint8Array($request.bodyBytes ?? []) : $request.body ?? new Uint8Array();
       //Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
       // 写入二进制数据
+      // Write binary data
       //Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
       //$request.body = rawBody;
       break;
   }
   
   // ============================================
+  // 通用请求修改
   // Common Request Modifications
   // ============================================
+  // 示例：添加自定义请求头
   // Example: Add custom headers
   // $request.headers['X-Custom-Header'] = 'CustomValue';
   // $request.headers['User-Agent'] = 'Custom User Agent';
   
+  // 示例：修改 URL 参数
   // Example: Modify URL parameters
   // url.searchParams.set('key', 'value');
   // $request.url = url.toString();
@@ -120,7 +137,9 @@ import gRPC from '@nsnanocat/grpc';
   Console.log(`🏁 ========== Request End ==========\n`);
   Console.debug(`Modified $request: ${JSON.stringify($request)}`);
   
+  // 重要：添加您的逻辑时，请取消注释下面的 return 语句
   // IMPORTANT: Uncomment the return statement below when you add your logic
+  // 返回修改后的请求
   // Return the modified request
   // return $request;
 })();

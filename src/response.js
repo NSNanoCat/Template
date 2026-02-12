@@ -1,22 +1,29 @@
+// 导入依赖项
 // Import dependencies
 import { $app, Console, Lodash, done, notification, time, wait, getStorage, fetch, Storage, StatusTexts } from '@nsnanocat/util';
 import { URL, URLSearchParams } from '@nsnanocat/url';
 import gRPC from '@nsnanocat/grpc';
 
+// 响应脚本模板
 // Response Script Template
+// 此脚本在收到响应后执行
 // This script is executed after receiving a response
+// 您可以修改响应、解析数据、处理错误等
 // You can modify the response, parse data, handle errors, etc.
 
 /**
+ * 主响应处理程序
  * Main response handler
- * @param {Object} $response - The response object
- * @param {Object} $request - The original request object
- * @returns {Object} Modified response object
+ * @param {Object} $response - 响应对象 / The response object
+ * @param {Object} $request - 原始请求对象 / The original request object
+ * @returns {Object} 修改后的响应对象 / Modified response object
  */
 !(async () => {
   // ============================================
+  // 格式检测和初始化
   // Format Detection and Initialization
   // ============================================
+  // 检测当前应用环境
   // Detect current app environment
   Console.debug(`Current App: ${$app}`);
   
@@ -25,10 +32,13 @@ import gRPC from '@nsnanocat/grpc';
   Console.debug(`$response.headers: ${JSON.stringify($response.headers)}`);
   
   // ============================================
+  // 基于格式的响应处理
   // Format-based Response Processing
   // ============================================
+  // 获取 Content-Type 并提取主 MIME 类型
   // Get Content-Type and extract the main MIME type
   const contentType = $response.headers?.['Content-Type'] || $response.headers?.['content-type'] || '';
+  // 从 Content-Type 中提取 FORMAT（删除 charset 和其他参数）
   // Extract FORMAT from Content-Type (remove charset and other parameters)
   const FORMAT = contentType.split(';')[0].trim();
   
@@ -37,11 +47,13 @@ import gRPC from '@nsnanocat/grpc';
   Console.debug(`$response.body: ${JSON.stringify($response.body)}`);
   
   // 格式判断
+  // Format detection
   switch (FORMAT) {
-    case undefined: // 视为无body
+    case undefined: // 视为无body / Treated as no body
       Console.log(`📦 No body (undefined)`);
       break;
       
+    // 这些情况有意直通到 default（相同处理）
     // These cases intentionally fall through to default (same handling)
     case "application/x-www-form-urlencoded":
     case "text/plain":
@@ -110,27 +122,34 @@ import gRPC from '@nsnanocat/grpc';
       //let rawBody = ($app === "Quantumult X") ? new Uint8Array($response.bodyBytes ?? []) : $response.body ?? new Uint8Array();
       //Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
       // 写入二进制数据
+      // Write binary data
       //Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
       //$response.body = rawBody;
       break;
   }
   
   // ============================================
+  // 通用响应修改
   // Common Response Modifications
   // ============================================
+  // 示例：添加自定义响应头
   // Example: Add custom response headers
   // $response.headers['X-Custom-Response'] = 'Modified';
   
+  // 示例：处理特定的状态码
   // Example: Handle specific status codes
   // if ($response.statusCode >= 400) {
   //   Console.error(`Request failed with status: ${$response.statusCode}`);
+  //   // 处理错误响应
   //   // Handle error response
   // }
   
   Console.log(`🏁 ========== Response End ==========\n`);
   Console.debug(`Modified $response.statusCode: ${$response.statusCode}`);
   
+  // 重要：添加您的逻辑时，请取消注释下面的 return 语句
   // IMPORTANT: Uncomment the return statement below when you add your logic
+  // 返回修改后的响应
   // Return the modified response
   // return $response;
 })();
