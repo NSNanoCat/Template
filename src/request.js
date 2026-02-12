@@ -30,6 +30,7 @@ import * as grpc from '@nsnanocat/grpc';
   // console.log('Request URL:', $request.url);
   // console.log('Request Method:', $request.method);
   
+  // IMPORTANT: Uncomment the return statement below when you add your logic
   // Return the modified request
   // return $request;
 })();

@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "开箱即用的脚本模板仓库 - Out-of-the-box script template repository",
   "type": "module",
-  "main": "dist/index.js",
   "scripts": {
     "build": "rollup -c",
     "build:watch": "rollup -c -w"

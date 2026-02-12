@@ -34,6 +34,7 @@ import * as grpc from '@nsnanocat/grpc';
   //   console.error('Request failed:', $response.statusCode);
   // }
   
+  // IMPORTANT: Uncomment the return statement below when you add your logic
   // Return the modified response
   // return $response;
 })();
