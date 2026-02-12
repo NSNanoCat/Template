@@ -42,6 +42,7 @@ import gRPC from '@nsnanocat/grpc';
       Console.log(`📦 No body (undefined)`);
       break;
       
+    // These cases intentionally fall through to default (same handling)
     case "application/x-www-form-urlencoded":
     case "text/plain":
     default:
