@@ -19,7 +19,8 @@
   "dependencies": {
     "@nsnanocat/util": "^1.0.0",
     "@nsnanocat/url": "^1.0.0",
-    "@nsnanocat/grpc": "^1.0.0"
+    "@nsnanocat/grpc": "^1.0.0",
+    "crypto-js": "^4.2.0"
   },
   "devDependencies": {
     "rollup": "^4.0.0",

@@ -3,6 +3,15 @@
 import { $app, Console, Lodash, done, notification, time, wait, getStorage, fetch, Storage, StatusTexts } from '@nsnanocat/util';
 import { URL, URLSearchParams } from '@nsnanocat/url';
 import gRPC from '@nsnanocat/grpc';
+// 加密库（按需启用）
+// Crypto library (enable as needed)
+// 使用场景 / Use cases:
+// - 数据加密解密（AES, DES, TripleDES 等）/ Data encryption/decryption (AES, DES, TripleDES, etc.)
+// - 哈希计算（MD5, SHA1, SHA256, SHA512 等）/ Hash calculation (MD5, SHA1, SHA256, SHA512, etc.)
+// - HMAC 签名生成和验证 / HMAC signature generation and verification
+// - Base64 编码解码 / Base64 encoding/decoding
+// - 请求体加密或签名 / Request body encryption or signing
+//import CryptoJS from 'crypto-js';
 
 // 请求脚本模板
 // Request Script Template
