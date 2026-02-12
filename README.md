@@ -68,6 +68,7 @@ Template/
 - [@nsnanocat/util](https://www.npmjs.com/package/@nsnanocat/util) - 实用工具函数库 / Utility functions library
 - [@nsnanocat/url](https://www.npmjs.com/package/@nsnanocat/url) - URL 和 URLSearchParams polyfill
 - [@nsnanocat/grpc](https://www.npmjs.com/package/@nsnanocat/grpc) - gRPC 客户端库 / gRPC client library
+- [crypto-js](https://www.npmjs.com/package/crypto-js) - 加密库（默认注释，按需启用）/ Crypto library (commented by default, enable as needed)
 - [Rollup](https://www.rollupjs.com) - 模块打包工具 / Module bundler
 
 ### 可用的导入模块 / Available Imports
@@ -98,6 +99,22 @@ import { URL, URLSearchParams } from '@nsnanocat/url';
 ```javascript
 import gRPC from '@nsnanocat/grpc';
 // 使用 gRPC.decode() 和 gRPC.encode() / Use gRPC.decode() and gRPC.encode()
+```
+
+**crypto-js** (使用默认导入，默认注释 / Use default import, commented by default):
+```javascript
+import CryptoJS from 'crypto-js';
+// 使用场景 / Use cases:
+// - AES/DES/TripleDES 加密解密 / AES/DES/TripleDES encryption/decryption
+// - MD5/SHA1/SHA256/SHA512 哈希计算 / Hash calculation
+// - HMAC 签名生成和验证 / HMAC signature generation and verification
+// - Base64 编码解码 / Base64 encoding/decoding
+
+// 示例 / Examples:
+// const encrypted = CryptoJS.AES.encrypt('message', 'secret').toString();
+// const decrypted = CryptoJS.AES.decrypt(encrypted, 'secret').toString(CryptoJS.enc.Utf8);
+// const hash = CryptoJS.SHA256('message').toString();
+// const hmac = CryptoJS.HmacSHA256('message', 'secret').toString();
 ```
 
 ## ✏️ 编写脚本 / Writing Scripts
