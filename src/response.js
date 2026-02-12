@@ -121,16 +121,11 @@ import gRPC from '@nsnanocat/grpc';
       
       // 方法 1: AES-CBC 模式解密（带 IV）
       // Method 1: AES-CBC mode decryption (with IV)
-      //const encryptedData = $response.body; // 假设响应体是加密字符串 / Assume response body is encrypted string
-      //const secretKey = "your-secret-key"; // 密钥 / Secret key
-      //const iv = "your-iv-string"; // 初始化向量 / Initialization vector
-      //const decrypted = CryptoJS.AES.decrypt(encryptedData, CryptoJS.enc.Utf8.parse(secretKey), {
-      //  iv: CryptoJS.enc.Utf8.parse(iv),
+      //body = JSON.parse(CryptoJS.AES.decrypt($response.body, CryptoJS.enc.Utf8.parse("your-secret-key"), {
+      //  iv: CryptoJS.enc.Utf8.parse("your-iv-string"),
       //  mode: CryptoJS.mode.CBC,
       //  padding: CryptoJS.pad.Pkcs7
-      //});
-      //const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
-      //body = JSON.parse(decryptedText);
+      //}).toString(CryptoJS.enc.Utf8));
       //Console.debug(`Decrypted body: ${JSON.stringify(body)}`);
       
       // 方法 2: AES-ECB 模式解密（无 IV，不推荐用于生产环境）
@@ -139,14 +134,10 @@ import gRPC from '@nsnanocat/grpc';
       // Warning: ECB mode is insecure, identical plaintext produces identical ciphertext, vulnerable to pattern analysis
       // 仅在必须兼容旧系统时使用，优先使用 CBC/GCM 模式
       // Only use when must maintain compatibility with legacy systems, prefer CBC/GCM modes
-      //const encryptedData = $response.body; // 假设响应体是加密字符串 / Assume response body is encrypted string
-      //const secretKey = "your-secret-key"; // 密钥 / Secret key
-      //const decrypted = CryptoJS.AES.decrypt(encryptedData, CryptoJS.enc.Utf8.parse(secretKey), {
+      //body = JSON.parse(CryptoJS.AES.decrypt($response.body, CryptoJS.enc.Utf8.parse("your-secret-key"), {
       //  mode: CryptoJS.mode.ECB,
       //  padding: CryptoJS.pad.Pkcs7
-      //});
-      //const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
-      //body = JSON.parse(decryptedText);
+      //}).toString(CryptoJS.enc.Utf8));
       //Console.debug(`Decrypted body: ${JSON.stringify(body)}`);
       
       // 处理解密后的 JSON 数据
@@ -156,12 +147,16 @@ import gRPC from '@nsnanocat/grpc';
       
       // 如果需要加密回去（可选）
       // If need to encrypt back (optional)
-      //const encryptedResponse = CryptoJS.AES.encrypt(JSON.stringify(body), CryptoJS.enc.Utf8.parse(secretKey), {
-      //  iv: CryptoJS.enc.Utf8.parse(iv),
+      //$response.body = CryptoJS.AES.encrypt(JSON.stringify(body), CryptoJS.enc.Utf8.parse("your-secret-key"), {
+      //  iv: CryptoJS.enc.Utf8.parse("your-iv-string"),
       //  mode: CryptoJS.mode.CBC,
       //  padding: CryptoJS.pad.Pkcs7
       //}).toString();
-      //$response.body = encryptedResponse;
+      
+      // 或者直接返回解密后的 JSON（更常见）
+      // Or directly return decrypted JSON (more common)
+      //$response.body = JSON.stringify(body);
+      break;
       
       // 或者直接返回解密后的 JSON（更常见）
       // Or directly return decrypted JSON (more common)
