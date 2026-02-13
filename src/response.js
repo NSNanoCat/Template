@@ -44,14 +44,10 @@ import gRPC from '@nsnanocat/grpc';
   // 基于格式的响应处理
   // Format-based Response Processing
   // ============================================
-  // 获取 Content-Type 并提取主 MIME 类型
-  // Get Content-Type and extract the main MIME type
-  const contentType = $response.headers?.['Content-Type'] || $response.headers?.['content-type'] || '';
-  // 从 Content-Type 中提取 FORMAT（删除 charset 和其他参数）
-  // Extract FORMAT from Content-Type (remove charset and other parameters)
-  const FORMAT = contentType.split(';')[0].trim();
+  // 从 Content-Type 中提取 FORMAT（主 MIME 类型）
+  // Extract FORMAT (main MIME type) from Content-Type
+  const FORMAT = ($response.headers?.["Content-Type"] ?? $response.headers?.["content-type"])?.split(";")?.[0];
   
-  Console.debug(`Content-Type: ${contentType}`);
   Console.debug(`Detected FORMAT: ${FORMAT}`);
   Console.debug(`$response.body: ${JSON.stringify($response.body)}`);
   
