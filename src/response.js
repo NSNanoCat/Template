@@ -132,8 +132,8 @@ import gRPC from '@nsnanocat/grpc';
       //  // 加密模式（可选：CBC, ECB, CFB, OFB, CTR，推荐使用 CBC）
       //  // Encryption mode (options: CBC, ECB, CFB, OFB, CTR, CBC recommended)
       //  mode: CryptoJS.mode.CBC,
-      //  // 填充方式（可选：Pkcs7, Iso97971, AnsiX923, Iso10126, ZeroPadding, NoPadding）
-      //  // Padding method (options: Pkcs7, Iso97971, AnsiX923, Iso10126, ZeroPadding, NoPadding)
+      //  // 填充方式（可选：Pkcs7, Iso9797_1, AnsiX923, Iso10126, ZeroPadding, NoPadding）
+      //  // Padding method (options: Pkcs7, Iso9797_1, AnsiX923, Iso10126, ZeroPadding, NoPadding)
       //  padding: CryptoJS.pad.Pkcs7
       //}).toString(CryptoJS.enc.Utf8));
       //Console.debug(`Decrypted body: ${JSON.stringify(body)}`);
@@ -151,8 +151,8 @@ import gRPC from '@nsnanocat/grpc';
       //  // 加密模式（可选：CBC, ECB, CFB, OFB, CTR，推荐使用 CBC）
       //  // Encryption mode (options: CBC, ECB, CFB, OFB, CTR, CBC recommended)
       //  mode: CryptoJS.mode.ECB,
-      //  // 填充方式（可选：Pkcs7, Iso97971, AnsiX923, Iso10126, ZeroPadding, NoPadding）
-      //  // Padding method (options: Pkcs7, Iso97971, AnsiX923, Iso10126, ZeroPadding, NoPadding)
+      //  // 填充方式（可选：Pkcs7, Iso9797_1, AnsiX923, Iso10126, ZeroPadding, NoPadding）
+      //  // Padding method (options: Pkcs7, Iso9797_1, AnsiX923, Iso10126, ZeroPadding, NoPadding)
       //  padding: CryptoJS.pad.Pkcs7
       //}).toString(CryptoJS.enc.Utf8));
       //Console.debug(`Decrypted body: ${JSON.stringify(body)}`);
@@ -175,8 +175,8 @@ import gRPC from '@nsnanocat/grpc';
       //  // 加密模式（可选：CBC, ECB, CFB, OFB, CTR，推荐使用 CBC）
       //  // Encryption mode (options: CBC, ECB, CFB, OFB, CTR, CBC recommended)
       //  mode: CryptoJS.mode.CBC,
-      //  // 填充方式（可选：Pkcs7, Iso97971, AnsiX923, Iso10126, ZeroPadding, NoPadding）
-      //  // Padding method (options: Pkcs7, Iso97971, AnsiX923, Iso10126, ZeroPadding, NoPadding)
+      //  // 填充方式（可选：Pkcs7, Iso9797_1, AnsiX923, Iso10126, ZeroPadding, NoPadding）
+      //  // Padding method (options: Pkcs7, Iso9797_1, AnsiX923, Iso10126, ZeroPadding, NoPadding)
       //  padding: CryptoJS.pad.Pkcs7
       //}).toString();
       
