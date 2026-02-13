@@ -121,8 +121,14 @@ import gRPC from '@nsnanocat/grpc';
       
       // 方法 1: AES-CBC 模式解密（带 IV）
       // Method 1: AES-CBC mode decryption (with IV)
-      //body = JSON.parse(CryptoJS.AES.decrypt($response.body, CryptoJS.enc.Utf8.parse("your-secret-key"), {
-      //  iv: CryptoJS.enc.Utf8.parse("your-iv-string"),
+      // 密钥（用户需要提供）
+      // Secret key (user needs to provide)
+      //const secretKey = "your-secret-key";
+      // 初始化向量（用户需要提供）
+      // Initialization vector (user needs to provide)
+      //const iv = "your-iv-string";
+      //body = JSON.parse(CryptoJS.AES.decrypt($response.body, CryptoJS.enc.Utf8.parse(secretKey), {
+      //  iv: CryptoJS.enc.Utf8.parse(iv),
       //  mode: CryptoJS.mode.CBC,
       //  padding: CryptoJS.pad.Pkcs7
       //}).toString(CryptoJS.enc.Utf8));
@@ -134,7 +140,10 @@ import gRPC from '@nsnanocat/grpc';
       // Warning: ECB mode is insecure, identical plaintext produces identical ciphertext, vulnerable to pattern analysis
       // 仅在必须兼容旧系统时使用，优先使用 CBC/GCM 模式
       // Only use when must maintain compatibility with legacy systems, prefer CBC/GCM modes
-      //body = JSON.parse(CryptoJS.AES.decrypt($response.body, CryptoJS.enc.Utf8.parse("your-secret-key"), {
+      // 密钥（用户需要提供）
+      // Secret key (user needs to provide)
+      //const secretKey = "your-secret-key";
+      //body = JSON.parse(CryptoJS.AES.decrypt($response.body, CryptoJS.enc.Utf8.parse(secretKey), {
       //  mode: CryptoJS.mode.ECB,
       //  padding: CryptoJS.pad.Pkcs7
       //}).toString(CryptoJS.enc.Utf8));
@@ -147,8 +156,14 @@ import gRPC from '@nsnanocat/grpc';
       
       // 如果需要加密回去（可选）
       // If need to encrypt back (optional)
-      //$response.body = CryptoJS.AES.encrypt(JSON.stringify(body), CryptoJS.enc.Utf8.parse("your-secret-key"), {
-      //  iv: CryptoJS.enc.Utf8.parse("your-iv-string"),
+      // 密钥（用户需要提供）
+      // Secret key (user needs to provide)
+      //const secretKey = "your-secret-key";
+      // 初始化向量（用户需要提供）
+      // Initialization vector (user needs to provide)
+      //const iv = "your-iv-string";
+      //$response.body = CryptoJS.AES.encrypt(JSON.stringify(body), CryptoJS.enc.Utf8.parse(secretKey), {
+      //  iv: CryptoJS.enc.Utf8.parse(iv),
       //  mode: CryptoJS.mode.CBC,
       //  padding: CryptoJS.pad.Pkcs7
       //}).toString();
