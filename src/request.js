@@ -1,7 +1,7 @@
 // 导入依赖项
 // Import dependencies
-import gRPC from '@nsnanocat/grpc';
-import { URL, URLSearchParams } from '@nsnanocat/url';
+import gRPC from '@nsnanocat/grpc'; // 仅在处理 gRPC 时需要导入 / Only needed when handling gRPC
+import { URL, URLSearchParams } from '@nsnanocat/url'; // 仅在 JavaScriptCore 环境中使用 URL 时需要导入，WebView 环境不需要 / Only needed when using URL in JavaScriptCore; not needed in WebView
 import { $app, $argument, Console, done, fetch, Lodash as _, notification, Storage, time, wait } from '@nsnanocat/util';
 // 加密库（按需启用）
 // Crypto library (enable as needed)
@@ -11,7 +11,7 @@ import { $app, $argument, Console, done, fetch, Lodash as _, notification, Stora
 // - HMAC 签名生成和验证 / HMAC signature generation and verification
 // - Base64 编码解码 / Base64 encoding/decoding
 // - 请求体加密或签名 / Request body encryption or signing
-//import CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js'; // 默认导入，按需启用 / Default import, enable as needed
 
 // 请求脚本模板
 // Request Script Template
