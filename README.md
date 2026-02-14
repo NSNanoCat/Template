@@ -35,10 +35,12 @@ Write your business logic in `src/request.js` and `src/response.js`. The templat
 npm run build
 ```
 
-**调试构建（未压缩，便于调试）：**
+**开发构建（未压缩，便于调试）：**
 ```bash
-npm run build:debug
+npm run build:dev
 ```
+
+`build:dev` 使用 `rollup.dev.config.js`，生成的文件不会压缩（保留可读性，便于调试）。
 
 构建后的文件将输出到 `js/` 目录。
 
@@ -54,12 +56,12 @@ Template/
 ├── js/               # 构建输出目录 / Build output directory
 │   ├── request.js    # 生产构建（压缩） / Production build (minified)
 │   ├── response.js   # 生产构建（压缩） / Production build (minified)
-│   ├── request.debug.js  # 调试构建 / Debug build
-│   └── response.debug.js # 调试构建 / Debug build
+│   ├── request.dev.js  # 开发构建（未压缩） / Development build (uncompressed)
+│   └── response.dev.js # 开发构建（未压缩） / Development build (uncompressed)
 ├── package.json      # 项目配置和依赖 / Project configuration and dependencies
 ├── rollup.config.js  # Rollup 主配置 / Rollup main configuration
 ├── rollup.default.config.js  # 生产构建配置 / Production build configuration
-├── rollup.debug.config.js    # 调试构建配置 / Debug build configuration
+├── rollup.dev.config.js      # 开发构建配置（未压缩） / Development build configuration (uncompressed)
 └── README.md         # 项目说明 / Project documentation
 ```
 
@@ -242,7 +244,7 @@ switch (FORMAT) {
 ## 🔧 NPM 脚本 / NPM Scripts
 
 - `npm run build` - 构建生产版本（压缩） / Build production version (minified)
-- `npm run build:debug` - 构建调试版本（未压缩，保留注释） / Build debug version (uncompressed, preserves comments)
+- `npm run build:dev` - 使用 `rollup.dev.config.js` 构建开发版本（未压缩） / Build development version with `rollup.dev.config.js` (uncompressed)
 - `npm run build:watch` - 监听模式构建 / Build in watch mode
 
 ## 📚 参考 / References

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "rollup -c",
-    "build:debug": "rollup --config --configDebug",
+    "build:dev": "rollup --config --configDev",
     "build:watch": "rollup -c -w"
   },
   "keywords": [
