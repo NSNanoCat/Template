@@ -17,7 +17,7 @@
   "author": "NSNanoCat",
   "license": "MIT",
   "dependencies": {
-    "@nsnanocat/util": "^1.0.0",
+    "@nsnanocat/util": "^2.1.1",
     "@nsnanocat/url": "^1.0.0",
     "@nsnanocat/grpc": "^1.0.0",
     "crypto-js": "^4.2.0"

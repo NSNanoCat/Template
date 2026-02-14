@@ -1,6 +1,6 @@
 // 导入依赖项
 // Import dependencies
-import { $app, Console, Lodash, done, notification, time, wait, getStorage, fetch, Storage, StatusTexts } from '@nsnanocat/util';
+import { $app, $argument, Console, Lodash as _, done, notification, time, wait, fetch, Storage } from '@nsnanocat/util';
 import { URL, URLSearchParams } from '@nsnanocat/url';
 import gRPC from '@nsnanocat/grpc';
 // 加密库（按需启用）

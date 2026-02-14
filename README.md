@@ -77,16 +77,15 @@ Template/
 ```javascript
 import { 
   $app,          // 当前应用检测 / Current app detection
+  $argument,     // 脚本参数 / Script arguments
   Console,       // 日志工具类 / Logging utility class
-  Lodash,        // Lodash 工具方法 / Lodash utility methods
+  Lodash as _,   // Lodash 工具方法（别名为 _）/ Lodash utility methods (aliased as _)
   done,          // 完成脚本执行 / Complete script execution
   notification,  // 系统通知 / System notification
   time,          // 时间格式化 / Time formatting
   wait,          // Promise延迟 / Promise-based delay
-  getStorage,    // 存储管理 / Storage management
   fetch,         // Fetch polyfill
-  Storage,       // Storage polyfill
-  StatusTexts    // HTTP状态文本映射 / HTTP status text mapping
+  Storage        // Storage polyfill
 } from '@nsnanocat/util';
 ```
 
