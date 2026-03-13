@@ -4,9 +4,9 @@
 
 ## 📦 简介 / Introduction
 
-这是一个以请求/响应处理为核心的模板仓库，当前结构已经拆分为“运行时入口”和“共享处理模块”。你可以继续生成适用于代理脚本环境的构建产物，也可以在 `src/Hono.js` 中复用同一套处理逻辑对接 Hono HTTP 服务。
+这是一个以请求/响应处理为核心的模板仓库，当前结构已经将 `Request()` 与 `Response()` 彻底拆分为两个独立处理函数。`src/request*.js` 与 `src/response*.js` 仅负责调用它们并适配宿主环境，你也可以在 `src/Hono.js` 中复用同一套函数对接 Hono HTTP 服务。
 
-This template repository centers on request/response processing and now separates runtime entry files from shared processing modules. You can keep building artifacts for proxy-script runtimes, or reuse the same processing pipeline from `src/Hono.js` in a Hono-based HTTP service.
+This template repository centers on request/response processing and now fully separates `Request()` and `Response()` into two independent processing functions. `src/request*.js` and `src/response*.js` only invoke them and adapt to the host runtime, while `src/Hono.js` can reuse the same functions in a Hono-based HTTP service.
 
 ## 🚀 快速开始 / Quick Start
 
@@ -24,9 +24,9 @@ npm install
 
 ### 3. 编写你的脚本 / Write your scripts
 
-将业务逻辑写在 `src/process/Request.mjs` 和 `src/process/Response.mjs` 中；它们是生产入口与其他运行时共享的核心处理模块。若你使用开发构建进行调试，请同步维护 `src/process/Request.dev.mjs` 与 `src/process/Response.dev.mjs`。
+将业务逻辑分别写在 `src/process/Request.mjs` 和 `src/process/Response.mjs` 中：前者只处理请求阶段，后者只处理响应阶段。若你使用开发构建进行调试，请同步维护 `src/process/Request.dev.mjs` 与 `src/process/Response.dev.mjs`。
 
-Write your business logic in `src/process/Request.mjs` and `src/process/Response.mjs`; they are the shared processing modules reused by the production entry files and other runtimes. If you rely on the development build for debugging, keep `src/process/Request.dev.mjs` and `src/process/Response.dev.mjs` in sync as well.
+Write your business logic separately in `src/process/Request.mjs` and `src/process/Response.mjs`: the former handles only the request phase, and the latter handles only the response phase. If you rely on the development build for debugging, keep `src/process/Request.dev.mjs` and `src/process/Response.dev.mjs` in sync as well.
 
 ### 4. 构建 / Build
 
@@ -54,10 +54,11 @@ The built files are written to the `dist/` directory.
 
 | 路径 / Path | 角色 / Role | 说明 / Description |
 | --- | --- | --- |
-| `src/request.js`<br>`src/request.dev.js` | 请求脚本入口 / Request script entry | 调用 `Request()` 并处理宿主环境的 `done()` 输出 / Calls `Request()` and finalizes host-specific `done()` output |
-| `src/response.js`<br>`src/response.dev.js` | 响应脚本入口 / Response script entry | 调用 `Response()` 并回传处理后的响应 / Calls `Response()` and returns the processed response |
-| `src/process/Request.mjs`<br>`src/process/Response.mjs` | 共享处理核心 / Shared processing core | 承载真正的请求与响应改写逻辑 / Hosts the real request and response mutation logic |
-| `src/process/*.dev.mjs` | 开发版处理核心 / Development processing core | 提供可读版本，便于调试和排查 / Provides readable development versions for debugging and inspection |
+| `src/request.js`<br>`src/request.dev.js` | 请求入口包装器 / Request entry wrapper | 只负责调用 `Request()` 并处理宿主环境的 `done()` 输出 / Only calls `Request()` and finalizes host-specific `done()` output |
+| `src/response.js`<br>`src/response.dev.js` | 响应入口包装器 / Response entry wrapper | 只负责调用 `Response()` 并回传处理后的响应 / Only calls `Response()` and returns the processed response |
+| `src/process/Request.mjs` | 请求处理函数 / Request processing function | 独立的 `Request($request)` 函数，负责请求阶段改写，并可返回构造响应 / Independent `Request($request)` function for request-phase mutations, optionally returning a constructed response |
+| `src/process/Response.mjs` | 响应处理函数 / Response processing function | 独立的 `Response($request, $response)` 函数，负责响应阶段改写 / Independent `Response($request, $response)` function for response-phase mutations |
+| `src/process/Request.dev.mjs`<br>`src/process/Response.dev.mjs` | 开发版函数实现 / Development function implementations | 与生产函数结构一致，但保留可读性，便于调试和排查 / Match the production function structure while remaining readable for debugging and inspection |
 | `index.js` | 统一部署入口 / Unified deployment entry | 根目录入口，直接用于 Vercel 与 Cloudflare Workers 部署 / Root entry used directly for Vercel and Cloudflare Workers deployments |
 | `src/Hono.js` | Hono 适配入口 / Hono adapter entry | 将 HTTP 请求映射到模板约定的 `$request/$response` 结构 / Maps HTTP traffic into the template's `$request/$response` structure |
 
@@ -144,16 +145,35 @@ import { Hono } from "hono";
 
 ## ✏️ 编写脚本 / Writing Scripts
 
-共享处理模块已经包含完整的 `switch (FORMAT)` 逻辑骨架，适合把真正的业务改写代码放到 `Request()` 与 `Response()` 中。
+模板已经将请求与响应逻辑拆成两个独立函数：`Request()` 只处理请求阶段，`Response()` 只处理响应阶段。入口文件只负责调用函数和处理运行时兼容，不再承载实际业务逻辑。
 
-The shared processing modules already include a complete `switch (FORMAT)` skeleton, so the actual business mutations should be implemented inside `Request()` and `Response()`.
+The template now splits request and response logic into two independent functions: `Request()` handles only the request phase, and `Response()` handles only the response phase. Entry files only invoke these functions and handle runtime compatibility instead of carrying business logic themselves.
+
+### 执行流程 / Execution Flow
+
+1. 请求进入 `src/request.js` 或 `src/request.dev.js`。
+2. 入口包装器调用 `Request($request)`。
+3. `Request()` 返回 `{ $request, $response }`：
+   如果返回 `$response`，则直接短路返回响应；否则继续发送修改后的 `$request`。
+4. 响应进入 `src/response.js` 或 `src/response.dev.js`。
+5. 入口包装器调用 `Response($request, $response)`。
+6. `Response()` 返回最终响应对象，由宿主环境输出。
+
+1. A request enters `src/request.js` or `src/request.dev.js`.
+2. The entry wrapper calls `Request($request)`.
+3. `Request()` returns `{ $request, $response }`:
+   when `$response` is returned, the flow short-circuits with that response; otherwise the modified `$request` continues upstream.
+4. The response enters `src/response.js` or `src/response.dev.js`.
+5. The entry wrapper calls `Response($request, $response)`.
+6. `Response()` returns the final response object for the host runtime to output.
 
 ### 主要特性 / Key Features
 
 - **精确格式检测** / Precise format detection based on exact Content-Type MIME types
 - **支持多种格式** / Supports multiple formats
-- **共享请求/响应处理核心** / Shared request and response processing core
-- **生产与开发入口分离** / Separate production and development entry files
+- **请求与响应函数彻底分离** / Request and response functions are fully separated
+- **入口包装器与业务逻辑分离** / Entry wrappers are separated from business logic
+- **生产与开发函数结构一致** / Production and development functions share the same structure
 - **多应用支持** / Multi-app support (Quantumult X, Surge, Loon, etc.)
 - **可选 Hono 运行时适配** / Optional Hono runtime adapter
 
@@ -227,9 +247,9 @@ export async function Response($request, $response) {
 
 The root `index.js` is the unified deployment entry. It re-exports the default instance from `src/Hono.js` so Vercel and Cloudflare Workers can use it directly as the entry file.
 
-`src/Hono.js` 提供了一个可选的 HTTP 适配层，用于把同一套响应处理逻辑接入 Hono。当前实现会先把传入请求转换为 `$request`，然后通过 `fetch()` 请求上游，再调用共享的 `Response()` 处理器。
+`src/Hono.js` 提供了一个可选的 HTTP 适配层，用于复用这两个独立函数。当前实现会先把传入请求转换为 `$request`，然后通过 `fetch()` 请求上游，再调用 `Response()` 处理器；如有需要，也可以启用预留的 `Request()` 钩子。
 
-`src/Hono.js` provides an optional HTTP adapter for reusing the same response-processing logic in Hono. The current implementation normalizes the inbound request into `$request`, performs the upstream `fetch()`, and then runs the shared `Response()` processor.
+`src/Hono.js` provides an optional HTTP adapter for reusing these two independent functions. The current implementation normalizes the inbound request into `$request`, performs the upstream `fetch()`, and then runs the `Response()` processor; the scaffolded `Request()` hook can also be enabled when needed.
 
 请求前置处理钩子 `Request()` 已在文件中预留，但默认保持注释状态；如果你需要在发起上游请求前改写请求或直接短路返回响应，可以手动启用这段逻辑。
 
