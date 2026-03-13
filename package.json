@@ -12,7 +12,7 @@
 		"nsnanocat",
 		"script",
 		"rollup",
-    "hono"
+		"hono"
 	],
 	"author": "NSNanoCat",
 	"license": "MIT",
@@ -23,7 +23,7 @@
 		"@nsnanocat/util": "^2.2.3",
 		"crypto-js": "^4.2.0",
 		"fetch-cookie": "^3.2.0",
-		"hono": "^4.12.5",
+		"hono": "^4.12.7",
 		"node-fetch": "^3.3.2",
 		"node-polyfill-webpack-plugin": "^4.1.0"
 	},
