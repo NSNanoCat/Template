@@ -1,277 +1,231 @@
-# Template
+# @nsnanocat/template
 
-开箱即用的脚本模板仓库 / Out-of-the-box Script Template Repository
+开箱即用的请求/响应脚本模板，同时预留了 Hono + Cloudflare Workers 的 HTTP 运行时入口。  
+An out-of-the-box request/response script template with an optional Hono + Cloudflare Workers HTTP runtime entry.
 
-## 📦 简介 / Introduction
+## 概览 / Overview
 
-这是一个以请求/响应处理为核心的模板仓库，当前结构已经将 `Request()` 与 `Response()` 彻底拆分为两个独立处理函数。`src/request*.js` 与 `src/response*.js` 仅负责调用它们并适配宿主环境，你也可以在 `src/Hono.js` 中复用同一套函数对接 Hono HTTP 服务。
+这个模板将核心逻辑收敛到两个可复用函数：`Request($request)` 与 `Response($request, $response)`。  
+This template centers the core logic around two reusable functions: `Request($request)` and `Response($request, $response)`.
 
-This template repository centers on request/response processing and now fully separates `Request()` and `Response()` into two independent processing functions. `src/request*.js` and `src/response*.js` only invoke them and adapt to the host runtime, while `src/Hono.js` can reuse the same functions in a Hono-based HTTP service.
+你可以把它用在两类场景：  
+You can use it in two runtime styles:
 
-## 🚀 快速开始 / Quick Start
+- 脚本运行时：输出 `dist/request.js` 与 `dist/response.js`，适合 Quantumult X、Surge、Loon 等请求/响应改写场景。  
+  Script runtime: build `dist/request.js` and `dist/response.js` for request/response rewriting in tools such as Quantumult X, Surge, and Loon.
+- HTTP 运行时：通过根目录 `index.js` 导出 `src/Hono.js`，可直接对接 Vercel 或 Cloudflare Workers。  
+  HTTP runtime: the root `index.js` exports `src/Hono.js` and can be wired directly to Vercel or Cloudflare Workers.
 
-### 1. 使用此模板创建新仓库 / Use this template to create a new repository
+## 当前变更 / Current Changes
 
-点击仓库页面上的 "Use this template" 按钮创建你自己的仓库。
+结合当前仓库代码和未跟踪的 `.github` 目录，这一版模板的重点变化如下：  
+Based on the current codebase and the untracked `.github` directory, this version mainly adds the following changes:
 
-Click the "Use this template" button on the repository page to create your own repository.
+- 请求阶段与响应阶段被明确拆分为独立核心模块，入口文件只负责宿主适配。  
+  Request and response stages are split into independent core modules, while entry files only handle host adaptation.
+- 新增统一部署入口 `index.js`，直接复用 `src/Hono.js`。  
+  A unified deployment entry `index.js` now reuses `src/Hono.js` directly.
+- 增加 `wrangler.jsonc`，便于 Cloudflare Workers 本地调试与部署。  
+  `wrangler.jsonc` is included for local debugging and deployment on Cloudflare Workers.
+- 增加 GitHub Actions 模版，覆盖构建、草稿发布、预发布、正式发布与 Workers 部署。  
+  GitHub Actions templates are included for build, draft release, pre-release, full release, and Workers deployment.
 
-### 2. 安装依赖 / Install dependencies
+## 快速开始 / Quick Start
+
+### 1. 安装依赖 / Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. 编写你的脚本 / Write your scripts
+### 2. 编写处理逻辑 / Implement your processing logic
 
-将业务逻辑分别写在 `src/process/Request.mjs` 和 `src/process/Response.mjs` 中：前者只处理请求阶段，后者只处理响应阶段。若你使用开发构建进行调试，请同步维护 `src/process/Request.dev.mjs` 与 `src/process/Response.dev.mjs`。
+主要编辑以下文件：  
+Edit these files first:
 
-Write your business logic separately in `src/process/Request.mjs` and `src/process/Response.mjs`: the former handles only the request phase, and the latter handles only the response phase. If you rely on the development build for debugging, keep `src/process/Request.dev.mjs` and `src/process/Response.dev.mjs` in sync as well.
+- `src/process/Request.mjs`：请求发出前的处理逻辑。  
+  `src/process/Request.mjs`: request-phase logic before the upstream request is sent.
+- `src/process/Response.mjs`：响应返回后的处理逻辑。  
+  `src/process/Response.mjs`: response-phase logic after the upstream response is received.
 
-### 4. 构建 / Build
+如果你需要保留可读性更高的调试版本，请同步维护：  
+If you want a more readable debug build, keep these files in sync as well:
 
-**生产构建（压缩，用于实际部署）：**
+- `src/process/Request.dev.mjs`
+- `src/process/Response.dev.mjs`
+
+### 3. 构建脚本产物 / Build script artifacts
+
+生产构建：  
+Production build:
 
 ```bash
 npm run build
 ```
 
-**开发构建（未压缩，便于调试）：**
+开发构建：  
+Development build:
 
 ```bash
 npm run build:dev
 ```
 
-`build:dev` 使用 `rollup.dev.config.js`，生成的文件不会压缩（保留可读性，便于调试）。默认构建仅输出脚本运行时入口，不包含 `src/Hono.js`。
+构建结果如下：  
+The build outputs are:
 
-`build:dev` uses `rollup.dev.config.js` to emit readable, unminified files for debugging. The default build targets only the script-runtime entry files and does not bundle `src/Hono.js`.
+- `npm run build` -> `dist/request.js`、`dist/response.js`
+- `npm run build:dev` -> `dist/request.dev.js`、`dist/response.dev.js`
 
-构建后的文件将输出到 `dist/` 目录。
+### 4. 部署 HTTP 入口 / Deploy the HTTP entry
 
-The built files are written to the `dist/` directory.
+根目录 `index.js` 会直接导出 Hono 应用，不参与 Rollup 打包。  
+The root `index.js` exports the Hono application directly and is not bundled by Rollup.
 
-## 🧭 处理架构 / Processing Architecture
+如果你要在本地或 Cloudflare Workers 上运行 HTTP 入口，可使用：  
+If you want to run the HTTP entry locally or on Cloudflare Workers, you can use:
 
-| 路径 / Path | 角色 / Role | 说明 / Description |
-| --- | --- | --- |
-| `src/request.js`<br>`src/request.dev.js` | 请求入口包装器 / Request entry wrapper | 只负责调用 `Request()` 并处理宿主环境的 `done()` 输出 / Only calls `Request()` and finalizes host-specific `done()` output |
-| `src/response.js`<br>`src/response.dev.js` | 响应入口包装器 / Response entry wrapper | 只负责调用 `Response()` 并回传处理后的响应 / Only calls `Response()` and returns the processed response |
-| `src/process/Request.mjs` | 请求处理函数 / Request processing function | 独立的 `Request($request)` 函数，负责请求阶段改写，并可返回构造响应 / Independent `Request($request)` function for request-phase mutations, optionally returning a constructed response |
-| `src/process/Response.mjs` | 响应处理函数 / Response processing function | 独立的 `Response($request, $response)` 函数，负责响应阶段改写 / Independent `Response($request, $response)` function for response-phase mutations |
-| `src/process/Request.dev.mjs`<br>`src/process/Response.dev.mjs` | 开发版函数实现 / Development function implementations | 与生产函数结构一致，但保留可读性，便于调试和排查 / Match the production function structure while remaining readable for debugging and inspection |
-| `index.js` | 统一部署入口 / Unified deployment entry | 根目录入口，直接用于 Vercel 与 Cloudflare Workers 部署 / Root entry used directly for Vercel and Cloudflare Workers deployments |
-| `src/Hono.js` | Hono 适配入口 / Hono adapter entry | 将 HTTP 请求映射到模板约定的 `$request/$response` 结构 / Maps HTTP traffic into the template's `$request/$response` structure |
+```bash
+npx wrangler dev
+npx wrangler deploy
+```
 
-## 📁 项目结构 / Project Structure
+## 运行模型 / Runtime Model
+
+### 脚本运行时 / Script Runtime
+
+- `src/request.js` / `src/request.dev.js` 负责调用 `Request()` 并把结果交回宿主。  
+  `src/request.js` / `src/request.dev.js` call `Request()` and hand the result back to the host.
+- `src/response.js` / `src/response.dev.js` 负责调用 `Response()` 并输出最终响应。  
+  `src/response.js` / `src/response.dev.js` call `Response()` and return the final response.
+- 当 `Request()` 返回 `$response` 时，请求链会被短路。  
+  When `Request()` returns `$response`, the request flow short-circuits immediately.
+
+### HTTP 运行时 / HTTP Runtime
+
+`src/Hono.js` 会把传入 HTTP 请求转换成模板约定的 `$request` 结构，先发起上游请求，再执行 `Response()`。  
+`src/Hono.js` converts the incoming HTTP request into the template's `$request` shape, fetches upstream first, and then runs `Response()`.
+
+当前 `Request()` 在 `src/Hono.js` 中保留了预处理钩子，但默认注释掉。  
+`Request()` is kept as a preprocessing hook in `src/Hono.js`, but it is commented out by default.
+
+如果你需要在 HTTP 入口里也复用请求改写逻辑，可以启用这一段注释代码。  
+If you also want request rewriting in the HTTP entry, uncomment that section in `src/Hono.js`.
+
+## 支持的数据格式 / Supported Payload Formats
+
+模板内已经预留了常见内容类型的处理分支：  
+The template already includes branches for common content types:
+
+- `application/json` / `text/json`
+- `text/plain`
+- `application/x-www-form-urlencoded`
+- `application/xml`、`text/xml`、`text/html`、`plist`
+- `application/vtt`、`text/vtt`
+- `application/x-mpegURL` 等 M3U8 类型  
+  `application/x-mpegURL` and related M3U8 types
+- `application/protobuf`、`application/grpc`、`application/grpc+proto`
+- `application/octet-stream`
+
+其中 gRPC / Protobuf 分支已经接入 `@nsnanocat/grpc`，JSON 分支也预留了 `crypto-js` 的加解密示例。  
+The gRPC / Protobuf branches already use `@nsnanocat/grpc`, and the JSON branch includes ready-to-edit `crypto-js` encryption/decryption examples.
+
+## 目录结构 / Project Layout
 
 ```text
-Template/
-├── index.js                # Vercel / Cloudflare Workers 统一部署入口 / Unified deployment entry for Vercel and Cloudflare Workers
+.
+├── index.js
+├── wrangler.jsonc
+├── package.json
+├── rollup.config.js
+├── rollup.default.config.js
+├── rollup.dev.config.js
 ├── src/
-│   ├── request.js           # 生产请求入口 / Production request entry
-│   ├── request.dev.js       # 开发请求入口 / Development request entry
-│   ├── response.js          # 生产响应入口 / Production response entry
-│   ├── response.dev.js      # 开发响应入口 / Development response entry
-│   ├── Hono.js              # Hono HTTP 适配入口 / Hono HTTP adapter entry
+│   ├── Hono.js
+│   ├── request.js
+│   ├── request.dev.js
+│   ├── response.js
+│   ├── response.dev.js
 │   └── process/
-│       ├── Request.mjs      # 生产请求处理核心 / Production request processing core
-│       ├── Request.dev.mjs  # 开发请求处理核心 / Development request processing core
-│       ├── Response.mjs     # 生产响应处理核心 / Production response processing core
-│       └── Response.dev.mjs # 开发响应处理核心 / Development response processing core
-├── dist/                    # 构建输出目录 / Build output directory
-│   ├── request.js           # 生产构建（压缩） / Production build (minified)
-│   ├── response.js          # 生产构建（压缩） / Production build (minified)
-│   ├── request.dev.js       # 开发构建（未压缩） / Development build (uncompressed)
-│   └── response.dev.js      # 开发构建（未压缩） / Development build (uncompressed)
-├── package.json             # 项目配置和依赖 / Project configuration and dependencies
-├── rollup.config.js         # Rollup 主配置 / Rollup main configuration
-├── rollup.default.config.js # 生产构建配置 / Production build configuration
-├── rollup.dev.config.js     # 开发构建配置 / Development build configuration
-└── README.md                # 项目说明 / Project documentation
+│       ├── Request.mjs
+│       ├── Request.dev.mjs
+│       ├── Response.mjs
+│       └── Response.dev.mjs
+└── .github/
+    ├── RELEASE-TEMPLATE.md
+    ├── actions/node-build/action.yml
+    └── workflows/
 ```
 
-## 📦 已包含的依赖 / Included Dependencies
+## 关键依赖 / Key Dependencies
 
-- [@nsnanocat/util](https://www.npmjs.com/package/@nsnanocat/util) - 实用工具函数库 / Utility functions library
-- [@nsnanocat/url](https://www.npmjs.com/package/@nsnanocat/url) - URL polyfill
-- [@nsnanocat/grpc](https://www.npmjs.com/package/@nsnanocat/grpc) - gRPC 客户端库 / gRPC client library
-- [crypto-js](https://www.npmjs.com/package/crypto-js) - 加密库（默认注释，按需启用） / Crypto library (commented by default, enable as needed)
-- [hono](https://www.npmjs.com/package/hono) - HTTP 运行时适配器 / HTTP runtime adapter
-- [node-fetch](https://www.npmjs.com/package/node-fetch) 与 [fetch-cookie](https://www.npmjs.com/package/fetch-cookie) - 预留给服务端扩展的 fetch 能力 / Reserved fetch helpers for server-side extensions
-- [Rollup](https://www.rollupjs.com) - 模块打包工具 / Module bundler
+- `@nsnanocat/util`：脚本运行时工具、`fetch`、日志和 `done()` 适配。  
+  `@nsnanocat/util`: runtime utilities, `fetch`, logging, and `done()` adaptation.
+- `@nsnanocat/url`：在 JavaScriptCore 等环境中提供 `URL` 支持。  
+  `@nsnanocat/url`: provides `URL` support in environments such as JavaScriptCore.
+- `@nsnanocat/grpc`：处理 gRPC 帧编解码。  
+  `@nsnanocat/grpc`: handles gRPC frame encoding and decoding.
+- `hono`：HTTP 服务入口。  
+  `hono`: powers the HTTP service entry.
+- `crypto-js`：按需启用的加密与解密工具。  
+  `crypto-js`: optional encryption/decryption helpers.
 
-### 可用的导入模块 / Available Imports
+## GitHub Actions / GitHub Actions
 
-**@nsnanocat/util** (使用命名导入 / Use named imports)
+当前 `.github` 目录已经准备了可复用的 workflow，但其中一部分依赖仓库 secrets，另一部分需要你先把占位字段改成自己的配置。  
+The `.github` directory already includes reusable workflows, but some depend on repository secrets and others require you to replace placeholder fields with your own values first.
 
-```javascript
-import {
-  $app,
-  $argument,
-  Console,
-  Lodash as _,
-  done,
-  notification,
-  time,
-  wait,
-  fetch,
-  Storage
-} from "@nsnanocat/util";
-```
+### 工作流一览 / Workflow Matrix
 
-**@nsnanocat/url** (使用命名导入 / Use named imports)
+| Workflow | 触发方式 / Trigger | 用途 / Purpose | 依赖配置 / Required config | 需要补齐的内容 / Fields to fill |
+| --- | --- | --- | --- | --- |
+| `build.yml` | `workflow_dispatch`、`workflow_call` | 生产构建，上传 `CHANGELOG.md` 与 `dist/` | `SUBMODULE_TOKEN`、`PACKAGE_TOKEN` | `package.json` 里补 `build:args`，或者删除 workflow 中的 `extra-command: npm run build:args` |
+| `dev.yml` | `workflow_dispatch`、`workflow_call` | 基于 `dev` 分支执行开发构建 | `SUBMODULE_TOKEN`、`PACKAGE_TOKEN` | 确保仓库存在 `dev` 分支 |
+| `draft.yml` | push `main` | 生成 GitHub Draft Release | 继承 `build.yml` 的变量；`GITHUB_TOKEN` 为 Actions 内置 | 发布前更新 `CHANGELOG.md` |
+| `pre-release.yml` | push tag `vX.Y.Z-alpha.N` / `vX.Y.Z-beta.N` | 发布预发布版本 | 继承 `build.yml` 的变量；`GITHUB_TOKEN` 为 Actions 内置 | 发布前更新 `CHANGELOG.md` |
+| `release.yml` | push tag `vX.Y.Z` | 发布正式版本 | 继承 `build.yml` 的变量；`GITHUB_TOKEN` 为 Actions 内置 | 发布前更新 `CHANGELOG.md` |
+| `deploy.yml` | push `dev` | 将开发构建产物发布到 Gist | `SUBMODULE_TOKEN`、`PACKAGE_TOKEN`、`GIST_TOKEN`、`GIST_ID`、`GIST_DESCRIPTION` | 将 `GIST_ID` / `GIST_DESCRIPTION` 配置为仓库级变量；`GIST_DESCRIPTION` 留空时会回退到 `package.json` 的 `name + "\\n" + description`；`file_path` 仍需改成真实产物名 |
+| `workers-dev.yml` | `workflow_dispatch` | 从 `dev` 分支手动部署 Cloudflare Workers | `SUBMODULE_TOKEN`、`PACKAGE_TOKEN`、`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | 确保 `wrangler.jsonc` 与 Cloudflare 项目配置一致 |
+| `workers-release.yml` | `workflow_dispatch` | 从默认分支手动部署 Cloudflare Workers | `SUBMODULE_TOKEN`、`PACKAGE_TOKEN`、`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | 确保 `wrangler.jsonc` 与 Cloudflare 项目配置一致 |
 
-```javascript
-import { URL } from "@nsnanocat/url";
-```
+### 变量与占位字段 / Variables And Placeholder Fields
 
-**@nsnanocat/grpc** (使用默认导入 / Use default import)
+| 名称 / Name | 类型 / Type | 用在何处 / Used by | 需要填写的内容 / What to provide |
+| --- | --- | --- | --- |
+| `SUBMODULE_TOKEN` | GitHub Actions secret | `build.yml`、`dev.yml`、`workers-dev.yml`、`workers-release.yml` | 可读取私有 submodule 的 GitHub Token；如果没有私有 submodule，可按需调整 checkout 配置 |
+| `PACKAGE_TOKEN` | GitHub Actions secret | 通过 `./.github/actions/node-build` 调用的所有构建流程 | 用于 `npm install` 的 `NODE_AUTH_TOKEN`，通常是私有 npm registry 或 GitHub Packages 访问令牌 |
+| `GIST_TOKEN` | GitHub Actions secret | `deploy.yml` | 有权限写入目标 Gist 的 GitHub Token |
+| `CLOUDFLARE_API_TOKEN` | GitHub Actions secret | `workers-dev.yml`、`workers-release.yml` | 具备 Workers 部署权限的 Cloudflare API Token |
+| `CLOUDFLARE_ACCOUNT_ID` | GitHub Actions secret | `workers-dev.yml`、`workers-release.yml` | Cloudflare Account ID |
+| `GITHUB_TOKEN` | GitHub Actions built-in secret | `draft.yml`、`pre-release.yml`、`release.yml` | GitHub 自动提供，通常不需要手动创建 |
+| `GIST_ID` | 仓库级 GitHub Actions variable (`vars`) / Repository-scoped GitHub Actions variable (`vars`) | `deploy.yml` | 目标 Gist 的 ID；请求脚本和响应脚本会写入同一个 Gist；请在当前仓库的 `Settings -> Secrets and variables -> Actions -> Variables` 中创建，不要依赖组织级或用户级变量 |
+| `GIST_DESCRIPTION` | 仓库级 GitHub Actions variable (`vars`) / Repository-scoped GitHub Actions variable (`vars`) | `deploy.yml` | 可选的 Gist 描述；优先级高于自动生成值；若未设置或为空，则回退为 `package.json` 的 `name` 与 `description` 换行拼接结果；请在当前仓库级 Variables 中创建 |
+| `file_path` | Workflow 内占位字段 | `deploy.yml` | 需要和实际构建产物一致；当前仓库默认产物是 `dist/request.dev.js` 与 `dist/response.dev.js`，不是 `dist/request.bundle.js` 与 `dist/response.bundle.js` |
+| `build:args` | `package.json` script | `build.yml` | 当前仓库还没有这个脚本；要么补上，要么删除 `extra-command: npm run build:args` |
+| `CHANGELOG.md` | 发布正文文件 | `build.yml`、`draft.yml`、`pre-release.yml`、`release.yml` | 每次发布前按 `.github/RELEASE-TEMPLATE.md` 填好内容 |
 
-```javascript
-import gRPC from "@nsnanocat/grpc";
-```
+如果你只是先启用最基础的发版流程，最少需要先准备 `SUBMODULE_TOKEN`、`PACKAGE_TOKEN` 与可发布的 `CHANGELOG.md`。  
+If you only want to enable the basic release flow first, the minimum setup is `SUBMODULE_TOKEN`, `PACKAGE_TOKEN`, and a ready-to-publish `CHANGELOG.md`.
 
-**crypto-js** (使用默认导入，默认注释 / Use default import, commented by default)
+## 发布说明 / Release Notes
 
-```javascript
-import CryptoJS from "crypto-js";
-```
+`CHANGELOG.md` 应按 `.github/RELEASE-TEMPLATE.md` 维护，因为 Draft / Pre-Release / Release 工作流都会直接把它当成发布正文。  
+`CHANGELOG.md` should follow `.github/RELEASE-TEMPLATE.md`, because the Draft / Pre-Release / Release workflows use it directly as the release body.
 
-**hono** (在 HTTP 适配层使用 / Used by the HTTP adapter)
+建议流程如下：  
+Recommended flow:
 
-```javascript
-import { Hono } from "hono";
-```
+1. 发布前复制或更新 `CHANGELOG.md` 中的模版内容。  
+   Before release, copy or update the template content in `CHANGELOG.md`.
+2. 将 `none` 替换为这次版本的实际变更。  
+   Replace `none` with the real changes for the version.
+3. 创建符合语义化版本的标签，再触发对应工作流。  
+   Create a semantic version tag and trigger the matching workflow.
 
-## ✏️ 编写脚本 / Writing Scripts
+## 自定义建议 / Customization Notes
 
-模板已经将请求与响应逻辑拆成两个独立函数：`Request()` 只处理请求阶段，`Response()` 只处理响应阶段。入口文件只负责调用函数和处理运行时兼容，不再承载实际业务逻辑。
-
-The template now splits request and response logic into two independent functions: `Request()` handles only the request phase, and `Response()` handles only the response phase. Entry files only invoke these functions and handle runtime compatibility instead of carrying business logic themselves.
-
-### 执行流程 / Execution Flow
-
-1. 请求进入 `src/request.js` 或 `src/request.dev.js`。
-2. 入口包装器调用 `Request($request)`。
-3. `Request()` 返回 `{ $request, $response }`：
-   如果返回 `$response`，则直接短路返回响应；否则继续发送修改后的 `$request`。
-4. 响应进入 `src/response.js` 或 `src/response.dev.js`。
-5. 入口包装器调用 `Response($request, $response)`。
-6. `Response()` 返回最终响应对象，由宿主环境输出。
-
-1. A request enters `src/request.js` or `src/request.dev.js`.
-2. The entry wrapper calls `Request($request)`.
-3. `Request()` returns `{ $request, $response }`:
-   when `$response` is returned, the flow short-circuits with that response; otherwise the modified `$request` continues upstream.
-4. The response enters `src/response.js` or `src/response.dev.js`.
-5. The entry wrapper calls `Response($request, $response)`.
-6. `Response()` returns the final response object for the host runtime to output.
-
-### 主要特性 / Key Features
-
-- **精确格式检测** / Precise format detection based on exact Content-Type MIME types
-- **支持多种格式** / Supports multiple formats
-- **请求与响应函数彻底分离** / Request and response functions are fully separated
-- **入口包装器与业务逻辑分离** / Entry wrappers are separated from business logic
-- **生产与开发函数结构一致** / Production and development functions share the same structure
-- **多应用支持** / Multi-app support (Quantumult X, Surge, Loon, etc.)
-- **可选 Hono 运行时适配** / Optional Hono runtime adapter
-
-### FORMAT 检测方式 / FORMAT Detection
-
-模板使用精确的 Content-Type 匹配，而不是简单的字符串包含检测：
-
-The template uses exact Content-Type matching instead of simple string inclusion:
-
-```javascript
-const contentType = $response.headers?.["Content-Type"] ?? $response.headers?.["content-type"] ?? "";
-const format = contentType.split(";")[0].trim();
-```
-
-### Request.mjs 示例 / Request.mjs Example
-
-```javascript
-export async function Request($request) {
-  let $response;
-  const format = ($request.headers?.["Content-Type"] ?? $request.headers?.["content-type"])?.split(";")?.[0];
-
-  switch (format) {
-    case "application/json": {
-      const body = JSON.parse($request.body ?? "{}");
-      body.customField = "customValue";
-      $request.body = JSON.stringify(body);
-      break;
-    }
-    case "application/grpc":
-    case "application/grpc+proto":
-      // 在这里解码并重新编码 gRPC 负载。
-      // Decode and re-encode the gRPC payload here.
-      break;
-    default:
-      break;
-  }
-
-  return { $request, $response };
-}
-```
-
-### Response.mjs 示例 / Response.mjs Example
-
-```javascript
-export async function Response($request, $response) {
-  const format = ($response.headers?.["Content-Type"] ?? $response.headers?.["content-type"])?.split(";")?.[0];
-
-  switch (format) {
-    case "application/json": {
-      const body = JSON.parse($response.body ?? "{}");
-      body.modified = true;
-      $response.body = JSON.stringify(body);
-      break;
-    }
-    case "application/protobuf":
-    case "application/grpc":
-      // 在这里处理二进制响应体。
-      // Process the binary response body here.
-      break;
-    default:
-      break;
-  }
-
-  return $response;
-}
-```
-
-## 🌐 Hono 入口 / Hono Entry
-
-根目录 `index.js` 是统一部署入口，直接导出 `src/Hono.js` 的默认实例，供 Vercel 与 Cloudflare Workers 直接作为入口文件使用。
-
-The root `index.js` is the unified deployment entry. It re-exports the default instance from `src/Hono.js` so Vercel and Cloudflare Workers can use it directly as the entry file.
-
-`src/Hono.js` 提供了一个可选的 HTTP 适配层，用于复用这两个独立函数。当前实现会先把传入请求转换为 `$request`，然后通过 `fetch()` 请求上游，再调用 `Response()` 处理器；如有需要，也可以启用预留的 `Request()` 钩子。
-
-`src/Hono.js` provides an optional HTTP adapter for reusing these two independent functions. The current implementation normalizes the inbound request into `$request`, performs the upstream `fetch()`, and then runs the `Response()` processor; the scaffolded `Request()` hook can also be enabled when needed.
-
-请求前置处理钩子 `Request()` 已在文件中预留，但默认保持注释状态；如果你需要在发起上游请求前改写请求或直接短路返回响应，可以手动启用这段逻辑。
-
-The `Request()` preprocessing hook is already scaffolded in the file but remains commented out by default. Enable it when you need to mutate requests before the upstream fetch or short-circuit with a constructed response.
-
-## 🔧 NPM 脚本 / NPM Scripts
-
-- `npm run build` - 构建生产版本（压缩） / Build production version (minified)
-- `npm run build:dev` - 构建开发版本（未压缩） / Build development version (uncompressed)
-- `npm run build:watch` - 监听模式构建 / Build in watch mode
-
-## 📚 参考 / References
-
-本模板参考了以下项目的结构：
-
-This template is inspired by the structure of the following projects:
-
-- [BiliUniverse/Enhanced](https://github.com/BiliUniverse/Enhanced)
-- [BiliUniverse/Redirect](https://github.com/BiliUniverse/Redirect)
-- [NSRingo/WeatherKit](https://github.com/NSRingo/WeatherKit)
-- [NSRingo/Maps](https://github.com/NSRingo/Maps)
-
-## 📄 License
-
-MIT
+- 如果你只需要脚本平台，重点维护 `src/process/*.mjs` 与 `dist/` 产物即可。  
+  If you only target script platforms, focus on `src/process/*.mjs` and the `dist/` outputs.
+- 如果你要提供 HTTP API，再根据自己的上游服务调整 `src/Hono.js`。  
+  If you also expose an HTTP API, adapt `src/Hono.js` to your upstream service.
+- 如果你需要请求阶段的 HTTP 预处理，启用 `src/Hono.js` 中注释掉的 `Request()` 钩子。  
+  If you need request-phase preprocessing in HTTP mode, enable the commented `Request()` hook in `src/Hono.js`.
