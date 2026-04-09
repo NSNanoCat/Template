@@ -208,6 +208,7 @@ export async function Response($request, $response) {
 		}
 
 		case "application/grpc":
+		case "application/grpc-web":
 		case "application/grpc+proto": {
 			Console.log(`📦 Processing gRPC format`);
 			//Console.debug(`$response.body: ${JSON.stringify($response.body)}`);
@@ -217,7 +218,18 @@ export async function Response($request, $response) {
 			//Console.debug(`isBuffer? ${ArrayBuffer.isView(rawBody)}: ${JSON.stringify(rawBody)}`);
 			// 解码 gRPC 数据
 			// Decode gRPC data
-			rawBody = gRPC.decode(rawBody);
+			switch (FORMAT) {
+				case "application/grpc":
+				case "application/grpc+proto":
+					rawBody = gRPC.decode(rawBody);
+					break;
+				case "application/grpc-web": {
+					const { bodyBytes, header } = gRPC.decodeWeb(rawBody);
+					rawBody = bodyBytes;
+					Object.assign(($response.headers ??= {}), header ?? {});
+					break;
+				}
+			}
 			// 解析链接并处理 protobuf 数据
 			// Parse link and process protobuf data
 			// 示例：解析路径（需要先定义）
@@ -246,6 +258,12 @@ export async function Response($request, $response) {
 			// 编码 gRPC 数据
 			// Encode gRPC data
 			rawBody = gRPC.encode(rawBody);
+			switch (FORMAT) {
+				case "application/grpc-web":
+					if ($response.headers?.["Content-Type"]) $response.headers["Content-Type"] = "application/grpc";
+					if ($response.headers?.["content-type"]) $response.headers["content-type"] = "application/grpc";
+					break;
+			}
 			// 写入二进制数据
 			// Write binary data
 			//Console.debug(`rawBody: ${JSON.stringify(rawBody)}`);
