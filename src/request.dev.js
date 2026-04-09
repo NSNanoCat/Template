@@ -25,7 +25,7 @@ let $response;
 						done({ response: $response });
 						break;
 					case "Quantumult X":
-						if (!$response.status) $response.status = "200";
+						if (!$response.status) $response.status = 200;
 						delete $response.headers?.["Content-Length"];
 						delete $response.headers?.["content-length"];
 						delete $response.headers?.["Transfer-Encoding"];
