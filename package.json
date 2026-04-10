@@ -17,10 +17,10 @@
 	"author": "NSNanoCat",
 	"license": "MIT",
 	"dependencies": {
-		"@biomejs/biome": "^2.4.10",
+		"@biomejs/biome": "^2.4.11",
 		"@nsnanocat/grpc": "^1.1.0",
 		"@nsnanocat/url": "^1.2.5",
-		"@nsnanocat/util": "^2.6.8",
+		"@nsnanocat/util": "^2.6.11",
 		"crypto-js": "^4.2.0",
 		"fetch-cookie": "^3.2.0",
 		"hono": "^4.12.12",
