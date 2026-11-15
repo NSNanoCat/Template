@@ -23,14 +23,10 @@ async function runEcho(name, request, fetchImpl) {
 
 test("回显入口：请求阶段取上游并返回处理后的响应 / echo entry fetches upstream and returns the processed response", async () => {
 	const sent = [];
-	const out = await runEcho(
-		"ok",
-		{ url: "https://example.com/api", method: "POST", headers: { "Content-Type": "application/json", "Accept-Encoding": "gzip, br", Host: "example.com" }, body: '{"route":"demo"}' },
-		async req => {
-			sent.push(req);
-			return { statusCode: 200, headers: { "Content-Type": "application/json", "Content-Encoding": "gzip" }, body: '{"ok":true}' };
-		},
-	);
+	const out = await runEcho("ok", { url: "https://example.com/api", method: "POST", headers: { "Content-Type": "application/json", "Accept-Encoding": "gzip, br", Host: "example.com" }, body: '{"route":"demo"}' }, async req => {
+		sent.push(req);
+		return { statusCode: 200, headers: { "Content-Type": "application/json", "Content-Encoding": "gzip" }, body: '{"ok":true}' };
+	});
 	assert.equal(sent.length, 1);
 	assert.equal(sent[0].url, "https://example.com/api");
 	assert.equal(sent[0].headers["Accept-Encoding"], "identity");
