@@ -54,7 +54,7 @@ export async function Request($request) {
 	// Parse URL for processing
 	const url = new URL($request.url);
 	Console.debug(`Request URL: ${url.toString()}`);
-	Console.debug(`URL Params: ${JSON.stringify(Object.fromEntries(url.searchParams))}`);
+	Console.debug(`URL Params: ${url.search}`);
 
 	// ============================================
 	// 基于格式的请求处理

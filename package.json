@@ -5,7 +5,8 @@
 	"scripts": {
 		"build": "rollup -c",
 		"build:dev": "rollup --config --configDev",
-		"build:watch": "rollup -c -w"
+		"build:watch": "rollup -c -w",
+		"test": "node --test test/*.test.js"
 	},
 	"keywords": [
 		"template",
