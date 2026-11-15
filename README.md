@@ -73,7 +73,7 @@ npm run build:dev
 构建结果如下：  
 The build outputs are:
 
-- `npm run build` -> `dist/request.js`、`dist/response.js`
+- `npm run build` -> `dist/request.js`、`dist/response.js`、`dist/echo.js`
 - `npm run build:dev` -> `dist/request.dev.js`、`dist/response.dev.js`
 
 ### 4. 部署 HTTP 入口 / Deploy the HTTP entry
@@ -99,6 +99,20 @@ npx wrangler deploy
   `src/response.js` / `src/response.dev.js` call `Response()` and return the final response.
 - 当 `Request()` 返回 `$response` 时，请求链会被短路。  
   When `Request()` returns `$response`, the request flow short-circuits immediately.
+- `src/echo.js` 负责回显模式（Quantumult X `script-analyze-echo-response`）：请求阶段取上游、调用 `Response()` 后直接返回。  
+  `src/echo.js` handles echo mode (Quantumult X `script-analyze-echo-response`): it fetches the upstream response, calls `Response()`, and returns the result in the request phase.
+
+### Quantumult X 注意事项 / Quantumult X Notes
+
+在 Quantumult X 中，响应脚本读不到请求脚本修改过的请求头，也读不到请求体（实际测试中观察到的现象）。  
+In Quantumult X, response scripts cannot read request headers modified by request scripts, nor the request body (observed in practice).
+
+依赖请求信息的逻辑（例如按请求体路由）请改用 `script-analyze-echo-response`（回显模式），在请求阶段取上游、处理后直接返回。仓库中的 `src/echo.js` 与 `dist/echo.js` 就是这种写法的示例：  
+For logic that depends on request data (for example, routing by the request body), use `script-analyze-echo-response` (echo mode): fetch the upstream response and return the processed result in the request phase. `src/echo.js` and `dist/echo.js` in this repository show this pattern:
+
+```text
+^https?:\/\/example\.com\/api url script-analyze-echo-response https://example.com/dist/echo.js
+```
 
 ### HTTP 运行时 / HTTP Runtime
 
@@ -141,6 +155,7 @@ The gRPC / Protobuf branches already use `@nsnanocat/grpc`, and the JSON branch 
 ├── rollup.dev.config.js
 ├── src/
 │   ├── Hono.js
+│   ├── echo.js
 │   ├── request.js
 │   ├── request.dev.js
 │   ├── response.js
@@ -150,6 +165,8 @@ The gRPC / Protobuf branches already use `@nsnanocat/grpc`, and the JSON branch 
 │       ├── Request.dev.mjs
 │       ├── Response.mjs
 │       └── Response.dev.mjs
+├── test/
+│   └── echo.test.js
 └── .github/
     ├── RELEASE-TEMPLATE.md
     ├── actions/node-build/action.yml
